@@ -1,14 +1,14 @@
 <?php
 /*
 Plugin Name: Global Site Tags
-Plugin URI: 
+Plugin URI:
 Description:
 Author: Andrew Billits (Incsub)
-Version: 1.0.3
+Version: 2.0
 Author URI:
 */
 
-/* 
+/*
 Copyright 2007-2009 Incsub (http://incsub.com)
 
 This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //---Config---------------------------------------------------------------//
 //------------------------------------------------------------------------//
 
+$global_site_tags_current_version = '1.0.4';
 $global_site_tags_base = 'tags'; //domain.tld/BASE/ Ex: domain.tld/tags/
 
 //------------------------------------------------------------------------//
@@ -37,8 +38,7 @@ $global_site_tags_base = 'tags'; //domain.tld/BASE/ Ex: domain.tld/tags/
 
 if ($current_blog->domain . $current_blog->path == $current_site->domain . $current_site->path){
 	add_filter('generate_rewrite_rules','global_site_tags_rewrite');
-	$global_site_tags_wp_rewrite = new WP_Rewrite;
-	$global_site_tags_wp_rewrite->flush_rules();
+	add_action('admin_head', 'global_site_tags_make_current');
 	add_filter('the_content', 'global_site_tags_output', 20);
 	add_filter('the_title', 'global_site_tags_title_output', 99, 2);
 	add_action('admin_footer', 'global_site_tags_page_setup');
@@ -50,6 +50,69 @@ add_action('update_wpmu_options', 'global_site_tags_site_admin_options_process')
 //------------------------------------------------------------------------//
 //---Functions------------------------------------------------------------//
 //------------------------------------------------------------------------//
+
+function global_site_tags_make_current() {
+	global $wpdb, $post_indexer_current_version;
+	if (get_site_option( "global_site_tags_version" ) == '') {
+		add_site_option( 'global_site_tags_version', '0.0.0' );
+	}
+
+	if (get_site_option( "global_site_tags_version" ) == $global_site_tags_current_version) {
+		// do nothing
+	} else {
+		//update to current version
+		update_site_option( "global_site_tags_installed", "no" );
+		update_site_option( "global_site_tags_version", $global_site_tags_current_version );
+	}
+	global_site_tags_global_install();
+	//--------------------------------------------------//
+	if (get_option( "global_site_tags_version" ) == '') {
+		add_option( 'global_site_tags_version', '0.0.0' );
+	}
+
+	if (get_option( "global_site_tags_version" ) == $post_indexer_current_version) {
+		// do nothing
+	} else {
+		//update to current version
+		update_option( "global_site_tags_version", $post_indexer_current_version );
+		global_site_tags_blog_install();
+	}
+}
+
+function global_site_tags_blog_install() {
+	global $wpdb, $post_indexer_current_version;
+	//$post_indexer_table1 = "";
+	//$wpdb->query( $post_indexer_table1 );
+}
+
+function global_site_tags_global_install() {
+	global $wpdb, $post_indexer_current_version;
+	if (get_site_option( "global_site_tags_installed" ) == '') {
+		add_site_option( 'global_site_tags_installed', 'no' );
+	}
+
+	if (get_site_option( "global_site_tags_installed" ) == "yes") {
+		// do nothing
+	} else {
+
+		$global_site_tags_table1 = "CREATE TABLE `" . $wpdb->base_prefix . "sitecategories` (
+		  `cat_ID` bigint(20) NOT NULL auto_increment,
+		  `cat_name` varchar(55) NOT NULL default '',
+		  `category_nicename` varchar(200) NOT NULL default '',
+		  `last_updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+		  PRIMARY KEY  (`cat_ID`),
+		  KEY `category_nicename` (`category_nicename`),
+		  KEY `last_updated` (`last_updated`)
+		);";
+
+		$wpdb->query( $global_site_tags_table1 );
+
+		update_site_option( "global_site_tags_installed", "yes" );
+
+		$global_site_tags_wp_rewrite = new WP_Rewrite;
+		$global_site_tags_wp_rewrite->flush_rules();
+	}
+}
 
 function global_site_tags_page_setup() {
 	global $wpdb, $user_ID, $global_site_tags_base;
@@ -70,10 +133,10 @@ function global_site_tags_site_admin_options() {
 	$global_site_tags_banned_tags = get_site_option('global_site_tags_banned_tags', 'uncategorized');
 	$global_site_tags_tag_cloud_order = get_site_option('global_site_tags_tag_cloud_order', 'count');
 	?>
-		<h3><?php _e('Site Tags') ?></h3> 
+		<h3><?php _e('Site Tags') ?></h3>
 		<table class="form-table">
-            <tr valign="top"> 
-                <th width="33%" scope="row"><?php _e('Listing Per Page') ?></th> 
+            <tr valign="top">
+                <th width="33%" scope="row"><?php _e('Listing Per Page') ?></th>
                 <td>
 				<select name="global_site_tags_per_page" id="global_site_tags_per_page">
 				   <option value="5" <?php if ( $global_site_tags_per_page == '5' ) { echo 'selected="selected"'; } ?> ><?php _e('5'); ?></option>
@@ -89,28 +152,28 @@ function global_site_tags_site_admin_options() {
 				</select>
                 <br /><?php //_e('') ?></td>
             </tr>
-            <tr valign="top"> 
-                <th width="33%" scope="row"><?php _e('Background Color') ?></th> 
+            <tr valign="top">
+                <th width="33%" scope="row"><?php _e('Background Color') ?></th>
                 <td><input name="global_site_tags_background_color" type="text" id="global_site_tags_background_color" value="<?php echo $global_site_tags_background_color; ?>" size="20" />
                 <br /><?php _e('Default') ?>: #F2F2EA</td>
             </tr>
-            <tr valign="top"> 
-                <th width="33%" scope="row"><?php _e('Alternate Background Color') ?></th> 
+            <tr valign="top">
+                <th width="33%" scope="row"><?php _e('Alternate Background Color') ?></th>
                 <td><input name="global_site_tags_alternate_background_color" type="text" id="global_site_tags_alternate_background_color" value="<?php echo $global_site_tags_alternate_background_color; ?>" size="20" />
                 <br /><?php _e('Default') ?>: #FFFFFF</td>
             </tr>
-            <tr valign="top"> 
-                <th width="33%" scope="row"><?php _e('Border Color') ?></th> 
+            <tr valign="top">
+                <th width="33%" scope="row"><?php _e('Border Color') ?></th>
                 <td><input name="global_site_tags_border_color" type="text" id="global_site_tags_border_color" value="<?php echo $global_site_tags_border_color; ?>" size="20" />
                 <br /><?php _e('Default') ?>: #CFD0CB</td>
             </tr>
-            <tr valign="top"> 
-                <th width="33%" scope="row"><?php _e('Banned Tags') ?></th> 
+            <tr valign="top">
+                <th width="33%" scope="row"><?php _e('Banned Tags') ?></th>
                 <td><input name="global_site_tags_banned_tags" type="text" id="global_site_tags_banned_tags" value="<?php echo $global_site_tags_banned_tags; ?>" style="width: 95%;" />
                 <br /><?php _e('Banned tags will not appear in tag clouds. Please separate tags with commas. Ex: tag1, tag2, tag3') ?></td>
             </tr>
-            <tr valign="top"> 
-                <th width="33%" scope="row"><?php _e('Tag Cloud Order') ?></th> 
+            <tr valign="top">
+                <th width="33%" scope="row"><?php _e('Tag Cloud Order') ?></th>
                 <td>
 				<select name="global_site_tags_tag_cloud_order" id="global_site_tags_tag_cloud_order">
 				   <option value="count" <?php if ( $global_site_tags_tag_cloud_order == 'count' ) { echo 'selected="selected"'; } ?> ><?php _e('Tag Count'); ?></option>
@@ -156,14 +219,14 @@ function global_site_tags_url_parse(){
 	$global_site_tags_url = rtrim($global_site_tags_url, "/");
 	$global_site_tags_url = ltrim($global_site_tags_url, $global_site_tags_base);
 	$global_site_tags_url = ltrim($global_site_tags_url, "/");
-	
+
 	list($global_site_tags_1, $global_site_tags_2, $global_site_tags_3, $global_site_tags_4) = explode("/", $global_site_tags_url);
 
 	$page_type = '';
 	$page_subtype = '';
 	$page = '';
 	$post = '';
-		
+
 	if ( empty( $global_site_tags_1 ) ) {
 		//landing
 		$page_type = 'landing';
@@ -174,18 +237,18 @@ function global_site_tags_url_parse(){
 		$page = $global_site_tags_2;
 		if ( empty( $page ) ) {
 			$page = 1;
-		}		
+		}
 		$tag = urldecode( $tag );
 	}
-	
+
 	$global_site_tags['page_type'] = $page_type;
 	$global_site_tags['page'] = $page;
 	$global_site_tags['tag'] = $tag;
-	
+
 	return $global_site_tags;
 }
 
-function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_size = 14,$high_font_size = 38,$class,$cloud_banned_tags = '') {
+function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_size = 14,$high_font_size = 52,$class,$cloud_banned_tags = '') {
 	global $wpdb, $current_site, $global_site_tags_base;
 	$global_site_tags_banned_tags = get_site_option('global_site_tags_banned_tags', 'uncategorized');
 	$global_site_tags_tag_cloud_order = get_site_option('global_site_tags_tag_cloud_order', 'count');
@@ -193,42 +256,43 @@ function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_si
 	$global_site_tags_banned_tags = str_replace(' ,', ',', $global_site_tags_banned_tags);
 	$global_site_tags_banned_tags = str_replace(', ', ',', $global_site_tags_banned_tags);
 	$global_site_tags_banned_tags .= ',';
-	
+
 	$global_site_tags_banned_tags_list = explode(',', $global_site_tags_banned_tags);
-	
+
 	if ( is_array( $cloud_banned_tags ) ) {
 		$global_site_tags_banned_tags_list = array_merge($cloud_banned_tags,global_site_tags_banned_tags_list);
 	}
 
-	$query = "SELECT term_count, term_id, term_count_updated FROM " . $wpdb->base_prefix . "term_counts WHERE term_count_type = 'all' AND term_count > '0'";
+	$query = "SELECT count(*) as term_count, t.term_id FROM " . $wpdb->base_prefix . "site_terms as t INNER JOIN " . $wpdb->base_prefix . "site_term_relationships AS tr ON t.term_id = tr.term_id WHERE t.type = 'post_tag' GROUP BY t.term_id";
+
 	if ( empty($order_by) ) {
 		$order_by = $global_site_tags_tag_cloud_order;
 	}
-	
+
 	if ($order_by == 'count'){
-		$query = $query . ' ORDER BY term_count DESC ';	
+		$query = $query . ' ORDER BY term_count DESC ';
 	} else if ($order_by == 'most_recent'){
-		$query = $query . ' ORDER BY term_count_updated DESC ';	
+		$query = $query . ' ORDER BY term_count DESC ';
 	}
 	$query = $query . ' LIMIT ' . $number;
 	$tags_array = $wpdb->get_results( $query, ARRAY_A );
-	
+
 	if (count($tags_array) > 0){
 		//insert term names
 		$tags_array_add = array();
 		$loop_count = 0;
 		foreach ($tags_array as $tag){
 			$loop_count = $loop_count + 1;
-			$tag_name = $wpdb->get_var("SELECT cat_name FROM " . $wpdb->base_prefix . "sitecategories WHERE cat_ID = '" . $tag['term_id'] . "'");
-			$tag_nicename = $wpdb->get_var("SELECT category_nicename FROM " . $wpdb->base_prefix . "sitecategories WHERE cat_ID = '" . $tag['term_id'] . "'");
+			$tag_name = $wpdb->get_var("SELECT name FROM " . $wpdb->base_prefix . "site_terms WHERE term_id = '" . $tag['term_id'] . "'");
+			$tag_nicename = $wpdb->get_var("SELECT slug FROM " . $wpdb->base_prefix . "site_terms WHERE term_id = '" . $tag['term_id'] . "'");
 			$tags_array_add[$loop_count]['term_name'] = $tag_name;
 			$tags_array_add[$loop_count]['term_nicename'] = $tag_nicename;
-			$tags_array_add[$loop_count]['term_count_updated'] = $tag['term_count_updated'];
+			//$tags_array_add[$loop_count]['term_count_updated'] = $tag['term_count_updated'];
 			$tags_array_add[$loop_count]['term_count'] = $tag['term_count'];
 			$tags_array_add[$loop_count]['term_id'] = $tag['term_id'];
 		}
 		$tags_array = $tags_array_add;
-	
+
 		//get min/max counts
 		$term_min_count = 99999999999;
 		$term_max_count = 0;
@@ -248,7 +312,7 @@ function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_si
 				}
 			}
 		}
-	
+
 		$term_count = count($tags_array);
 		//adjust term count
 		foreach ($tags_array as $tag){
@@ -271,7 +335,7 @@ function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_si
 		//loop through and toss out the tag cloud
 		$counter = 1;
 		//print_r($tags_array);
-		$content .= '<div id="global_tag_cloud">';
+		$content .= '<div>';
 		foreach ($tags_array as $tag){
 			$hide_tag = 'false';
 			foreach ($global_site_tags_banned_tags_list as $blacklist_tag) {
@@ -293,7 +357,7 @@ function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_si
 				if ($class != ''){
 					$content .= '<a class="' . $class . '" href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . $tag['term_nicename'] . '/" title="' . __('recent post(s)') . '" style="font-size: ' . $font_size . 'px;" id="cat-' . $tag['term_id'] . '">' . $tag['term_name'] . '</a>' . "\n";
 				} else {
-					$content .= '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . $tag['term_nicename'] . '/" title="' . __('recent post(s)') . '" style="line-height:46px;padding-bottom:20px;padding-right:2px;text-decoration:none;font-size: ' . $font_size . 'px;" id="cat-' . $tag['term_id'] . '">' . $tag['term_name'] . '</a>' . "\n";
+					$content .= '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . $tag['term_nicename'] . '/" title="' . __('recent post(s)') . '" style="float:left;padding-bottom:20px;padding-right:2px;text-decoration:none;font-size: ' . $font_size . 'px;" id="cat-' . $tag['term_id'] . '">' . $tag['term_name'] . '</a>' . "\n";
 				}
 				$counter = $counter + 1;
 			}
@@ -316,7 +380,7 @@ function global_site_tags_title_output($title, $post_ID = '') {
 		if ( $global_site_tags['page_type'] == 'landing' ) {
 			$title = '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/">' . __('Tags') . '</a>';
 		} else {
-			$tag_name = $wpdb->get_var("SELECT cat_name FROM " . $wpdb->base_prefix . "sitecategories WHERE category_nicename = '" . $global_site_tags['tag'] . "'");
+			$tag_name = $wpdb->get_var("SELECT name FROM " . $wpdb->base_prefix . "site_terms WHERE slug = '" . $global_site_tags['tag'] . "'");
 			if ( $global_site_tags['page'] > 1 ) {
 				$title = '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/">' . __('Tags') . '</a> &raquo; ' . '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . $global_site_tags['tag'] . '/">' . $tag_name . '</a> &raquo; ' . '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . $global_site_tags['tag'] .  '/' . $global_site_tags['page'] . '/">' . $global_site_tags['page'] . '</a>';
 			} else {
@@ -339,17 +403,17 @@ function global_site_tags_output($content) {
 		$global_site_tags = global_site_tags_url_parse();
 		if ( $global_site_tags['page_type'] == 'landing' ) {
 			//=====================================//
-			$content .= global_site_tags_tag_cloud($content, 50, $global_site_tags_tag_cloud_order, 14, 38, '' ,'');
+			$content .= global_site_tags_tag_cloud($content, 50, $global_site_tags_tag_cloud_order, 14, 52, '' ,'');
 			//=====================================//
 		} else if ( $global_site_tags['page_type'] == 'tag' ) {
 			//=====================================//
-			$tag_name = $wpdb->get_var("SELECT cat_name FROM " . $wpdb->base_prefix . "sitecategories WHERE category_nicename = '" . $global_site_tags['tag'] . "'");
+			$tag_name = $wpdb->get_var("SELECT name FROM " . $wpdb->base_prefix . "site_terms WHERE slug = '" . $global_site_tags['tag'] . "'");
 			if ( empty( $tag_name ) ) {
-				$tag_name = $wpdb->get_var("SELECT cat_name FROM " . $wpdb->base_prefix . "sitecategories WHERE category_nicename = '" . urlencode($global_site_tags['tag']) . "'");
+				$tag_name = $wpdb->get_var("SELECT name FROM " . $wpdb->base_prefix . "site_terms WHERE slug = '" . urlencode($global_site_tags['tag']) . "'");
 			}
-			$tag_id = $wpdb->get_var("SELECT cat_ID FROM " . $wpdb->base_prefix . "sitecategories WHERE category_nicename = '" . $global_site_tags['tag'] . "'");
+			$tag_id = $wpdb->get_var("SELECT term_id FROM " . $wpdb->base_prefix . "site_terms WHERE slug = '" . $global_site_tags['tag'] . "'");
 			if ( empty( $tag_id ) ) {
-				$tag_id = $wpdb->get_var("SELECT cat_ID FROM " . $wpdb->base_prefix . "sitecategories WHERE category_nicename = '" . urlencode($global_site_tags['tag']) . "'");
+				$tag_id = $wpdb->get_var("SELECT term_id FROM " . $wpdb->base_prefix . "site_terms WHERE slug = '" . urlencode($global_site_tags['tag']) . "'");
 			}
 			if ($global_site_tags['page'] == 1){
 				$start = 0;
@@ -433,10 +497,10 @@ function global_site_tags_output($content) {
 function global_site_tags_navigation_output($content, $per_page, $page, $tag, $next){
 	global $wpdb, $current_site, $global_site_tags_base;
 
-	$tag_id = $wpdb->get_var("SELECT cat_ID FROM " . $wpdb->base_prefix . "sitecategories WHERE category_nicename = '" . $tag . "'");
+	$tag_id = $wpdb->get_var("SELECT term_id FROM " . $wpdb->base_prefix . "site_terms WHERE slug = '" . $tag . "'");
 	$post_count = $wpdb->get_var("SELECT COUNT(*) FROM " . $wpdb->base_prefix . "site_posts WHERE post_terms LIKE '%|" . $tag_id . "|%' AND blog_public = 1 ORDER BY site_post_id DESC");
 	//$post_count = $post_count - 1;
-	
+
 	//generate page div
 	//============================================================================//
 	$total_pages = global_site_tags_roundup($post_count / $per_page, 0);
@@ -450,7 +514,7 @@ function global_site_tags_navigation_output($content, $per_page, $page, $tag, $n
 	} else {
 		$showing_high = $page * $per_page;
 	}
-	
+
     $content .= '<td style="font-size:12px; text-align:left;" width="50%">';
 	if ($post_count > $per_page){
 	//============================================================================//
@@ -461,7 +525,7 @@ function global_site_tags_navigation_output($content, $per_page, $page, $tag, $n
 		$content .= '<a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . urlencode( $tag ) . '/' . $previous_page . '/">&laquo; ' . __('Previous') . '</a>';
 		}
 	//============================================================================//
-	}	
+	}
 	$content .= '</td>';
     $content .= '<td style="font-size:12px; text-align:right;" width="50%">';
 	if ($post_count > $per_page){
