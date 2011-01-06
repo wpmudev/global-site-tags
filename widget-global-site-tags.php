@@ -11,9 +11,9 @@ Author URI:
 //------------------------------------------------------------------------//
 //---Config---------------------------------------------------------------//
 //------------------------------------------------------------------------//
-$widget_global_site_tags_title = 'Global Site Tags';
+$widget_global_site_tags_title = __('Global Site Tags', "globalsitetags");
 $widget_global_site_tags_nice_title = 'global_site_tags';
-$widget_global_site_tags_description = 'Displays tags from all blogs';
+$widget_global_site_tags_description = __('Displays tags from all blogs', "globalsitetags");
 $widget_global_site_tags_height = 600;
 $widget_global_site_tags_width = 300;
 //------------------------------------------------------------------------//
@@ -86,14 +86,14 @@ class widget_global_site_tags extends WP_Widget {
 
 		//Output the options
 		?>
-		<p style="text-align:left;"><label for="<?php echo $this->get_field_name('title'); ?>"><?php _e('Widget Title'); ?><br /><input style="width: 100%;" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo htmlspecialchars($instance['title']); ?>" />
+		<p style="text-align:left;"><label for="<?php echo $this->get_field_name('title'); ?>"><?php _e('Widget Title', "globalsitetags"); ?><br /><input style="width: 100%;" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo htmlspecialchars($instance['title']); ?>" />
         </label></p>
-		<p style="text-align:left;"><label for="<?php echo $this->get_field_name('tag_cloud_order'); ?>"><?php _e('Tag Cloud Order'); ?><br /><select style="width: 100%;" id="<?php echo $this->get_field_id('tag_cloud_order'); ?>" name="<?php echo $this->get_field_name('tag_cloud_order'); ?>">
-            <option value="count" <?php if ( $instance['tag_cloud_order'] == 'count' ) { echo 'selected="selected"'; } ?> ><?php _e('Tag Count'); ?></option>
-            <option value="most_recent" <?php if ( $instance['tag_cloud_order'] == 'most_recent' ) { echo 'selected="selected"'; } ?> ><?php _e('Most Recent'); ?></option>
+		<p style="text-align:left;"><label for="<?php echo $this->get_field_name('tag_cloud_order'); ?>"><?php _e('Tag Cloud Order', "globalsitetags"); ?><br /><select style="width: 100%;" id="<?php echo $this->get_field_id('tag_cloud_order'); ?>" name="<?php echo $this->get_field_name('tag_cloud_order'); ?>">
+            <option value="count" <?php if ( $instance['tag_cloud_order'] == 'count' ) { echo 'selected="selected"'; } ?> ><?php _e('Tag Count', "globalsitetags"); ?></option>
+            <option value="most_recent" <?php if ( $instance['tag_cloud_order'] == 'most_recent' ) { echo 'selected="selected"'; } ?> ><?php _e('Most Recent', "globalsitetags"); ?></option>
         </select>
         </label></p>
-		<p style="text-align:left;"><label for="<?php echo $this->get_field_name('number'); ?>"><?php _e('Number of Tags'); ?><br /><select style="width: 100%;" id="<?php echo $this->get_field_id('number'); ?>" name="<?php echo $this->get_field_name('number'); ?>">
+		<p style="text-align:left;"><label for="<?php echo $this->get_field_name('number'); ?>"><?php _e('Number of Tags', "globalsitetags"); ?><br /><select style="width: 100%;" id="<?php echo $this->get_field_id('number'); ?>" name="<?php echo $this->get_field_name('number'); ?>">
         	<?php
 			unset($counter);
 			for ( $counter = 1; $counter <= 100; $counter += 1) {
@@ -105,7 +105,7 @@ class widget_global_site_tags extends WP_Widget {
         </select>
         </label></p>
 
-		<p style="text-align:left;"><label for="<?php echo $this->get_field_name('high_font_size'); ?>"><?php _e('Largest Font Size'); ?><br /><select style="width: 100%;" id="<?php echo $this->get_field_id('high_font_size'); ?>" name="<?php echo $this->get_field_name('high_font_size'); ?>">
+		<p style="text-align:left;"><label for="<?php echo $this->get_field_name('high_font_size'); ?>"><?php _e('Largest Font Size', "globalsitetags"); ?><br /><select style="width: 100%;" id="<?php echo $this->get_field_id('high_font_size'); ?>" name="<?php echo $this->get_field_name('high_font_size'); ?>">
         	<?php
 			unset($counter);
 			for ( $counter = 1; $counter <= 100; $counter += 1) {
@@ -117,7 +117,7 @@ class widget_global_site_tags extends WP_Widget {
         </select>
         </label></p>
 
-		<p style="text-align:left;"><label for="<?php echo $this->get_field_name('low_font_size'); ?>"><?php _e('Smallest Font Size'); ?><br /><select style="width: 100%;" id="<?php echo $this->get_field_id('low_font_size'); ?>" name="<?php echo $this->get_field_name('low_font_size'); ?>">
+		<p style="text-align:left;"><label for="<?php echo $this->get_field_name('low_font_size'); ?>"><?php _e('Smallest Font Size', "globalsitetags"); ?><br /><select style="width: 100%;" id="<?php echo $this->get_field_id('low_font_size'); ?>" name="<?php echo $this->get_field_name('low_font_size'); ?>">
         	<?php
 			unset($counter);
 			for ( $counter = 1; $counter <= 100; $counter += 1) {

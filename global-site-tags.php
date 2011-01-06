@@ -133,51 +133,51 @@ function global_site_tags_site_admin_options() {
 	$global_site_tags_banned_tags = get_site_option('global_site_tags_banned_tags', 'uncategorized');
 	$global_site_tags_tag_cloud_order = get_site_option('global_site_tags_tag_cloud_order', 'count');
 	?>
-		<h3><?php _e('Site Tags') ?></h3>
+		<h3><?php _e('Site Tags', "globalsitetags") ?></h3>
 		<table class="form-table">
             <tr valign="top">
-                <th width="33%" scope="row"><?php _e('Listing Per Page') ?></th>
+                <th width="33%" scope="row"><?php _e('Listing Per Page', "globalsitetags") ?></th>
                 <td>
 				<select name="global_site_tags_per_page" id="global_site_tags_per_page">
-				   <option value="5" <?php if ( $global_site_tags_per_page == '5' ) { echo 'selected="selected"'; } ?> ><?php _e('5'); ?></option>
-				   <option value="10" <?php if ( $global_site_tags_per_page == '10' ) { echo 'selected="selected"'; } ?> ><?php _e('10'); ?></option>
-				   <option value="15" <?php if ( $global_site_tags_per_page == '15' ) { echo 'selected="selected"'; } ?> ><?php _e('15'); ?></option>
-				   <option value="20" <?php if ( $global_site_tags_per_page == '20' ) { echo 'selected="selected"'; } ?> ><?php _e('20'); ?></option>
-				   <option value="25" <?php if ( $global_site_tags_per_page == '25' ) { echo 'selected="selected"'; } ?> ><?php _e('25'); ?></option>
-				   <option value="30" <?php if ( $global_site_tags_per_page == '30' ) { echo 'selected="selected"'; } ?> ><?php _e('30'); ?></option>
-				   <option value="35" <?php if ( $global_site_tags_per_page == '35' ) { echo 'selected="selected"'; } ?> ><?php _e('35'); ?></option>
-				   <option value="40" <?php if ( $global_site_tags_per_page == '40' ) { echo 'selected="selected"'; } ?> ><?php _e('40'); ?></option>
-				   <option value="45" <?php if ( $global_site_tags_per_page == '45' ) { echo 'selected="selected"'; } ?> ><?php _e('45'); ?></option>
-				   <option value="50" <?php if ( $global_site_tags_per_page == '50' ) { echo 'selected="selected"'; } ?> ><?php _e('50'); ?></option>
+				   <option value="5" <?php if ( $global_site_tags_per_page == '5' ) { echo 'selected="selected"'; } ?> ><?php _e('5', "globalsitetags"); ?></option>
+				   <option value="10" <?php if ( $global_site_tags_per_page == '10' ) { echo 'selected="selected"'; } ?> ><?php _e('10', "globalsitetags"); ?></option>
+				   <option value="15" <?php if ( $global_site_tags_per_page == '15' ) { echo 'selected="selected"'; } ?> ><?php _e('15', "globalsitetags"); ?></option>
+				   <option value="20" <?php if ( $global_site_tags_per_page == '20' ) { echo 'selected="selected"'; } ?> ><?php _e('20', "globalsitetags"); ?></option>
+				   <option value="25" <?php if ( $global_site_tags_per_page == '25' ) { echo 'selected="selected"'; } ?> ><?php _e('25', "globalsitetags"); ?></option>
+				   <option value="30" <?php if ( $global_site_tags_per_page == '30' ) { echo 'selected="selected"'; } ?> ><?php _e('30', "globalsitetags"); ?></option>
+				   <option value="35" <?php if ( $global_site_tags_per_page == '35' ) { echo 'selected="selected"'; } ?> ><?php _e('35', "globalsitetags"); ?></option>
+				   <option value="40" <?php if ( $global_site_tags_per_page == '40' ) { echo 'selected="selected"'; } ?> ><?php _e('40', "globalsitetags"); ?></option>
+				   <option value="45" <?php if ( $global_site_tags_per_page == '45' ) { echo 'selected="selected"'; } ?> ><?php _e('45', "globalsitetags"); ?></option>
+				   <option value="50" <?php if ( $global_site_tags_per_page == '50' ) { echo 'selected="selected"'; } ?> ><?php _e('50', "globalsitetags"); ?></option>
 				</select>
                 <br /><?php //_e('') ?></td>
             </tr>
             <tr valign="top">
-                <th width="33%" scope="row"><?php _e('Background Color') ?></th>
+                <th width="33%" scope="row"><?php _e('Background Color', "globalsitetags") ?></th>
                 <td><input name="global_site_tags_background_color" type="text" id="global_site_tags_background_color" value="<?php echo $global_site_tags_background_color; ?>" size="20" />
-                <br /><?php _e('Default') ?>: #F2F2EA</td>
+                <br /><?php _e('Default', "globalsitetags") ?>: #F2F2EA</td>
             </tr>
             <tr valign="top">
-                <th width="33%" scope="row"><?php _e('Alternate Background Color') ?></th>
+                <th width="33%" scope="row"><?php _e('Alternate Background Color', "globalsitetags") ?></th>
                 <td><input name="global_site_tags_alternate_background_color" type="text" id="global_site_tags_alternate_background_color" value="<?php echo $global_site_tags_alternate_background_color; ?>" size="20" />
-                <br /><?php _e('Default') ?>: #FFFFFF</td>
+                <br /><?php _e('Default', "globalsitetags") ?>: #FFFFFF</td>
             </tr>
             <tr valign="top">
-                <th width="33%" scope="row"><?php _e('Border Color') ?></th>
+                <th width="33%" scope="row"><?php _e('Border Color', "globalsitetags") ?></th>
                 <td><input name="global_site_tags_border_color" type="text" id="global_site_tags_border_color" value="<?php echo $global_site_tags_border_color; ?>" size="20" />
-                <br /><?php _e('Default') ?>: #CFD0CB</td>
+                <br /><?php _e('Default', "globalsitetags") ?>: #CFD0CB</td>
             </tr>
             <tr valign="top">
-                <th width="33%" scope="row"><?php _e('Banned Tags') ?></th>
+                <th width="33%" scope="row"><?php _e('Banned Tags', "globalsitetags") ?></th>
                 <td><input name="global_site_tags_banned_tags" type="text" id="global_site_tags_banned_tags" value="<?php echo $global_site_tags_banned_tags; ?>" style="width: 95%;" />
-                <br /><?php _e('Banned tags will not appear in tag clouds. Please separate tags with commas. Ex: tag1, tag2, tag3') ?></td>
+                <br /><?php _e('Banned tags will not appear in tag clouds. Please separate tags with commas. Ex: tag1, tag2, tag3', "globalsitetags") ?></td>
             </tr>
             <tr valign="top">
-                <th width="33%" scope="row"><?php _e('Tag Cloud Order') ?></th>
+                <th width="33%" scope="row"><?php _e('Tag Cloud Order', "globalsitetags") ?></th>
                 <td>
 				<select name="global_site_tags_tag_cloud_order" id="global_site_tags_tag_cloud_order">
-				   <option value="count" <?php if ( $global_site_tags_tag_cloud_order == 'count' ) { echo 'selected="selected"'; } ?> ><?php _e('Tag Count'); ?></option>
-				   <option value="most_recent" <?php if ( $global_site_tags_tag_cloud_order == 'most_recent' ) { echo 'selected="selected"'; } ?> ><?php _e('Most Recent'); ?></option>
+				   <option value="count" <?php if ( $global_site_tags_tag_cloud_order == 'count' ) { echo 'selected="selected"'; } ?> ><?php _e('Tag Count', "globalsitetags"); ?></option>
+				   <option value="most_recent" <?php if ( $global_site_tags_tag_cloud_order == 'most_recent' ) { echo 'selected="selected"'; } ?> ><?php _e('Most Recent', "globalsitetags"); ?></option>
 				</select>
                 <br /><?php //_e('') ?></td>
             </tr>
@@ -357,14 +357,14 @@ function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_si
 				if ($class != ''){
 					$content .= '<a class="' . $class . '" href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . $tag['term_nicename'] . '/" title="' . __('recent post(s)') . '" style="font-size: ' . $font_size . 'px;" id="cat-' . $tag['term_id'] . '">' . $tag['term_name'] . '</a>' . "\n";
 				} else {
-					$content .= '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . $tag['term_nicename'] . '/" title="' . __('recent post(s)') . '" style="float:left;padding-bottom:20px;padding-right:2px;text-decoration:none;font-size: ' . $font_size . 'px;" id="cat-' . $tag['term_id'] . '">' . $tag['term_name'] . '</a>' . "\n";
+					$content .= '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . $tag['term_nicename'] . '/" title="' . __('recent post(s)', "globalsitetags") . '" style="float:left;padding-bottom:20px;padding-right:2px;text-decoration:none;font-size: ' . $font_size . 'px;" id="cat-' . $tag['term_id'] . '">' . $tag['term_name'] . '</a>' . "\n";
 				}
 				$counter = $counter + 1;
 			}
 		}
 		$content .= '</div>';
 	} else {
-		$content .= '<p><center>' . __("There are no tags to display.") . '</center></p>';
+		$content .= '<p><center>' . __("There are no tags to display.", "globalsitetags") . '</center></p>';
 	}
 	return $content;
 }
@@ -444,7 +444,7 @@ function global_site_tags_output($content) {
 				$content .= '<table border="0" border="0" cellpadding="2px" cellspacing="2px" width="100%" bgcolor="">';
 					$content .= '<tr>';
 						$content .= '<td style="background-color:' . $global_site_tags_background_color . '; border-bottom-style:solid; border-bottom-color:' . $global_site_tags_border_color . '; border-bottom-width:1px; font-size:12px;" width="10%"> </td>';
-						$content .= '<td style="background-color:' . $global_site_tags_background_color . '; border-bottom-style:solid; border-bottom-color:' . $global_site_tags_border_color . '; border-bottom-width:1px; font-size:12px;" width="90%"><center><strong>' .  __('Posts') . '</strong></center></td>';
+						$content .= '<td style="background-color:' . $global_site_tags_background_color . '; border-bottom-style:solid; border-bottom-color:' . $global_site_tags_border_color . '; border-bottom-width:1px; font-size:12px;" width="90%"><center><strong>' .  __('Posts', "globalsitetags") . '</strong></center></td>';
 					$content .= '</tr>';
 			}
 				//=================================//
@@ -471,12 +471,12 @@ function global_site_tags_output($content) {
 							$content .= '<td style="background-color:' . $bg_color . ';" width="90%">';
 							if ( function_exists('members_directory_site_admin_options') ) {
 								$post_author_nicename = $wpdb->get_var("SELECT user_nicename FROM " . $wpdb->base_prefix . "users WHERE ID = '" . $post['post_author'] . "'");
-								$content .= '<strong><a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $members_directory_base . '/' . $post_author_nicename . '/">' . $post_author_display_name . '</a> ' . __('Wrote') . ': </strong> ';
+								$content .= '<strong><a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $members_directory_base . '/' . $post_author_nicename . '/">' . $post_author_display_name . '</a> ' . __('Wrote', "globalsitetags") . ': </strong> ';
 							} else {
 								$content .= '<strong' . $post_author_display_name . ' ' . __('wrote') . ': </strong> ';
 							}
 							$content .= '<strong><a style="text-decoration:none;" href="' . $post['post_permalink'] . '">' . $post['post_title'] . '</a></strong><br />';
-							$content .= mb_substr(strip_tags($post['post_content'],'<a>'),0, 250) . ' (<a style="text-decoration:none;" href="' . $post['post_permalink'] . '">' . __('More') . '</a>)';
+							$content .= mb_substr(strip_tags($post['post_content'],'<a>'),0, 250) . ' (<a style="text-decoration:none;" href="' . $post['post_permalink'] . '">' . __('More', "globalsitetags") . '</a>)';
 							$content .= '</td>';
 						$content .= '</tr>';
 					}
@@ -488,7 +488,7 @@ function global_site_tags_output($content) {
 				$content .= $navigation_content;
 			}
 		} else {
-			$content = __('Invalid page.');
+			$content = __('Invalid page.', "globalsitetags");
 		}
 	}
 	return $content;
@@ -522,7 +522,7 @@ function global_site_tags_navigation_output($content, $per_page, $page, $tag, $n
 			//$content .= __('Previous');
 		} else {
 		$previous_page = $page - 1;
-		$content .= '<a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . urlencode( $tag ) . '/' . $previous_page . '/">&laquo; ' . __('Previous') . '</a>';
+		$content .= '<a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . urlencode( $tag ) . '/' . $previous_page . '/">&laquo; ' . __('Previous', "globalsitetags") . '</a>';
 		}
 	//============================================================================//
 	}
@@ -538,7 +538,7 @@ function global_site_tags_navigation_output($content, $per_page, $page, $tag, $n
 					//$content .= __('Next');
 				} else {
 					$next_page = $page + 1;
-				$content .= '<a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . urlencode( $tag ) . '/' . $next_page . '/">' . __('Next') . ' &raquo;</a>';
+				$content .= '<a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . urlencode( $tag ) . '/' . $next_page . '/">' . __('Next', "globalsitetags") . ' &raquo;</a>';
 				}
 			}
 		}
