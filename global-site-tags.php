@@ -5,7 +5,8 @@ Plugin URI:
 Description:
 Author: Andrew Billits (Incsub)
 Version: 2.0
-Author URI:
+Author URI: http://premium.wpmudev.org
+WDP ID: 105
 */
 
 /*
@@ -24,6 +25,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+
+/* -------------------- Update Notifications Notice -------------------- */
+if ( !function_exists( 'wdp_un_check' ) ) {
+  add_action( 'admin_notices', 'wdp_un_check', 5 );
+  add_action( 'network_admin_notices', 'wdp_un_check', 5 );
+  function wdp_un_check() {
+    if ( !class_exists( 'WPMUDEV_Update_Notifications' ) && current_user_can( 'edit_users' ) )
+      echo '<div class="error fade"><p>' . __('Please install the latest version of <a href="http://premium.wpmudev.org/project/update-notifications/" title="Download Now &raquo;">our free Update Notifications plugin</a> which helps you stay up-to-date with the most stable, secure versions of WPMU DEV themes and plugins. <a href="http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/">More information &raquo;</a>', 'wpmudev') . '</a></p></div>';
+  }
+}
+/* --------------------------------------------------------------------- */
 
 //------------------------------------------------------------------------//
 //---Config---------------------------------------------------------------//
@@ -47,9 +59,20 @@ if ($current_blog->domain . $current_blog->path == $current_site->domain . $curr
 add_action('wpmu_options', 'global_site_tags_site_admin_options');
 add_action('update_wpmu_options', 'global_site_tags_site_admin_options_process');
 
+add_action( 'plugins_loaded', 'global_site_tags_internationalisation');
+
 //------------------------------------------------------------------------//
 //---Functions------------------------------------------------------------//
 //------------------------------------------------------------------------//
+
+function global_site_tags_internationalisation() {
+	// Load the text-domain
+	$locale = apply_filters( 'globalsitetags_locale', get_locale() );
+	$mofile = dirname(__FILE__) . "/languages/globalsitetags-$locale.mo";
+
+	if ( file_exists( $mofile ) )
+		load_textdomain( 'globalsitetags', $mofile );
+}
 
 function global_site_tags_make_current() {
 	global $wpdb, $post_indexer_current_version;

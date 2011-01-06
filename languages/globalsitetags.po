@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Site Tags 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-06 15:09+0100\n"
-"PO-Revision-Date: 2011-01-06 15:09+0100\n"
+"POT-Creation-Date: 2011-01-06 15:52+0100\n"
+"PO-Revision-Date: 2011-01-06 15:52+0100\n"
 "Last-Translator: Barry <barry@mapinated.com>\n"
 "Language-Team: Incsub <barry@incsub.com>\n"
 "MIME-Version: 1.0\n"
@@ -13,135 +13,139 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: /Users/barrygetty/Work/wordpress/plugins/global-site-tags\n"
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:136
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:35
+msgid "Please install the latest version of <a href=\"http://premium.wpmudev.org/project/update-notifications/\" title=\"Download Now &raquo;\">our free Update Notifications plugin</a> which helps you stay up-to-date with the most stable, secure versions of WPMU DEV themes and plugins. <a href=\"http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/\">More information &raquo;</a>"
+msgstr ""
+
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:159
 msgid "Site Tags"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:139
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:162
 msgid "Listing Per Page"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:142
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:165
 msgid "5"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:143
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:166
 msgid "10"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:144
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:167
 msgid "15"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:145
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:168
 msgid "20"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:146
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:169
 msgid "25"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:147
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:170
 msgid "30"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:148
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:171
 msgid "35"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:149
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:172
 msgid "40"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:150
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:173
 msgid "45"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:151
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:174
 msgid "50"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:156
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:179
 msgid "Background Color"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:158
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:163
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:168
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:181
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:186
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:191
 msgid "Default"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:161
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:184
 msgid "Alternate Background Color"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:166
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:189
 msgid "Border Color"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:171
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:194
 msgid "Banned Tags"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:173
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:196
 msgid "Banned tags will not appear in tag clouds. Please separate tags with commas. Ex: tag1, tag2, tag3"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:176
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:91
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:199
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:99
 msgid "Tag Cloud Order"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:179
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:92
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:202
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:100
 msgid "Tag Count"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:180
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:93
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:203
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:101
 msgid "Most Recent"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:358
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:360
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:381
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:383
 msgid "recent post(s)"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:367
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:390
 msgid "There are no tags to display."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:381
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:385
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:387
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:404
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:408
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:410
 msgid "Tags"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:447
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:470
 msgid "Posts"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:474
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:497
 msgid "Wrote"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:476
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:499
 msgid "wrote"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:479
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:502
 msgid "More"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:491
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:514
 msgid "Invalid page."
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:525
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:548
 msgid "Previous"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:541
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/global-site-tags.php:564
 msgid "Next"
 msgstr ""
 
@@ -153,19 +157,19 @@ msgstr ""
 msgid "Displays tags from all blogs"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:89
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:97
 msgid "Widget Title"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:96
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:104
 msgid "Number of Tags"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:108
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:116
 msgid "Largest Font Size"
 msgstr ""
 
-#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:120
+#: /Users/barrygetty/Work/wordpress/plugins/global-site-tags/widget-global-site-tags.php:128
 msgid "Smallest Font Size"
 msgstr ""
 

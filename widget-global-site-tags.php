@@ -5,7 +5,7 @@ Plugin URI:
 Description:
 Author: Andrew Billits (Incsub)
 Version: 2.0
-Author URI:
+Author URI: http://premium.wpmudev.org
 */
 
 //------------------------------------------------------------------------//
@@ -38,6 +38,14 @@ class widget_global_site_tags extends WP_Widget {
 	//Declares the widget_global_site_tags class.
 	function widget_global_site_tags() {
 		global $widget_global_site_tags_title, $widget_global_site_tags_nice_title, $widget_global_site_tags_description, $widget_global_site_tags_height, $widget_global_site_tags_width;
+
+		// Load the text-domain
+		$locale = apply_filters( 'globalsitetags_locale', get_locale() );
+		$mofile = dirname(__FILE__) . "/languages/globalsitetags-$locale.mo";
+
+		if ( file_exists( $mofile ) )
+			load_textdomain( 'globalsitetags', $mofile );
+
 		$widget_ops = array('classname' => 'widget_global_site_tags', 'description' => __($widget_global_site_tags_description) );
 		$control_ops = array('width' => $widget_global_site_tags_width, 'height' => $widget_global_site_tags_height);
 		$this->WP_Widget($widget_global_site_tags_nice_title, __($widget_global_site_tags_title), $widget_ops, $control_ops);
