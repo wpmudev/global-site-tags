@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: Global Site Tags
-Plugin URI:
-Description:
+Plugin URI: http://premium.wpmudev.org/project/global-site-tags
+Description: This powerful plugin allows you to simply display a global tag cloud for your entire WordPress Multisite network. How cool is that!
 Author: Andrew Billits (Incsub)
-Version: 2.0
+Version: 2.0.1
 Author URI: http://premium.wpmudev.org
 WDP ID: 105
 */
@@ -32,7 +32,7 @@ if ( !function_exists( 'wdp_un_check' ) ) {
   add_action( 'network_admin_notices', 'wdp_un_check', 5 );
   function wdp_un_check() {
     if ( !class_exists( 'WPMUDEV_Update_Notifications' ) && current_user_can( 'edit_users' ) )
-      echo '<div class="error fade"><p>' . __('Please install the latest version of <a href="http://premium.wpmudev.org/project/update-notifications/" title="Download Now &raquo;">our free Update Notifications plugin</a> which helps you stay up-to-date with the most stable, secure versions of WPMU DEV themes and plugins. <a href="http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/">More information &raquo;</a>', 'wpmudev') . '</a></p></div>';
+      echo '<div class="error fade"><p>' . __('Please install the latest version of <a href="http://premium.wpmudev.org/project/update-notifications/" title="Download Now &raquo;">our free Update Notifications plugin</a> which helps you stay up-to-date with the most stable, secure versions of WPMU DEV themes and plugins. <a href="http://premium.wpmudev.org/wpmu-dev/update-notifications-plugin-information/">More information &raquo;</a>', 'wpmudev') . '</p></div>';
   }
 }
 /* --------------------------------------------------------------------- */
@@ -41,7 +41,7 @@ if ( !function_exists( 'wdp_un_check' ) ) {
 //---Config---------------------------------------------------------------//
 //------------------------------------------------------------------------//
 
-$global_site_tags_current_version = '1.0.4';
+$global_site_tags_current_version = '2.0.1';
 $global_site_tags_base = 'tags'; //domain.tld/BASE/ Ex: domain.tld/tags/
 
 //------------------------------------------------------------------------//
