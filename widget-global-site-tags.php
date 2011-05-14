@@ -4,7 +4,7 @@ Plugin Name: Global Site Tags Widget
 Plugin URI: http://premium.wpmudev.org/project/global-site-tags
 Description: This powerful plugin allows you to simply display a global tag cloud for your entire WordPress Multisite network. How cool is that!
 Author: Andrew Billits (Incsub)
-Version: 2.0.1
+Version: 2.1
 Author URI: http://premium.wpmudev.org
 */
 
@@ -68,7 +68,7 @@ class widget_global_site_tags extends WP_Widget {
 
 		//Make the Hello World Example widget
 		//echo '<div style="text-align:center;padding:10px;">' . $lineOne . '<br />' . $lineTwo . "</div>";
-		echo global_site_tags_tag_cloud('',$instance['number'],$instance['tag_cloud_order'],$instance['low_font_size'],$instance['high_font_size'],'','');
+		echo global_site_tags_tag_cloud('',$instance['number'],$instance['tag_cloud_order'],$instance['low_font_size'],$instance['high_font_size'],'','', $instance['poststype']);
 
 		//After the widget
 		echo $after_widget;
@@ -83,6 +83,7 @@ class widget_global_site_tags extends WP_Widget {
 		$instance['number'] = strip_tags(stripslashes($new_instance['number']));
 		$instance['high_font_size'] = strip_tags(stripslashes($new_instance['high_font_size']));
 		$instance['low_font_size'] = strip_tags(stripslashes($new_instance['low_font_size']));
+		$instance['poststype'] = strip_tags(stripslashes($new_instance['poststype']));
 
 		return $instance;
 	}
@@ -90,7 +91,7 @@ class widget_global_site_tags extends WP_Widget {
 	//Creates the edit form for the widget.
 	function form($instance) {
 		//Defaults
-		$instance = wp_parse_args( (array) $instance, array('title'=>'', 'tag_cloud_order'=>'count', 'number'=>25, 'high_font_size'=>52, 'low_font_size'=>14) );
+		$instance = wp_parse_args( (array) $instance, array('title'=>'', 'tag_cloud_order'=>'count', 'number'=>25, 'high_font_size'=>52, 'low_font_size'=>14, 'poststype' => 'post') );
 
 		//Output the options
 		?>
@@ -136,7 +137,42 @@ class widget_global_site_tags extends WP_Widget {
 			?>
         </select>
         </label></p>
+
 		<?php
+			$post_types = $this->get_post_types();
+
+		?>
+
+		<p style="text-align:left;"><label for="<?php echo $this->get_field_name( 'poststype' ); ?>" style="line-height:35px;display:block;"><?php _e('Post Type', 'globalsitetags'); ?>:<br />
+        <select name="<?php echo $this->get_field_name( 'poststype' ); ?>" id="<?php echo $this->get_field_id( 'poststype' ); ?>" style="width:95%;">
+        	<option value="all" <?php selected( $instance['poststype'], 'all' ); ?> ><?php _e('all', 'globalsitetags'); ?></option>
+		<?php
+				if(!empty($post_types)) {
+					foreach( $post_types as $r ) {
+						?>
+						<option value="<?php echo $r; ?>" <?php selected( $instance['poststype'], $r ); ?> ><?php _e($r, 'globalsitetags'); ?></option>
+						<?php
+					}
+				} else {
+					?>
+					<option value="post" <?php selected( $instance['poststype'], 'post' ); ?> ><?php _e('post', 'globalsitetags'); ?></option>
+					<?php
+				}
+		?>
+        </select>
+        </label></p>
+
+		<?php
+	}
+
+	function get_post_types() {
+		global $wpdb;
+
+		$sql = $wpdb->prepare( "SELECT post_type FROM " . $wpdb->base_prefix . "site_posts GROUP BY post_type" );
+
+		$results = $wpdb->get_col( $sql );
+
+		return $results;
 	}
 
 }

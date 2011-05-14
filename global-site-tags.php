@@ -4,7 +4,7 @@ Plugin Name: Global Site Tags
 Plugin URI: http://premium.wpmudev.org/project/global-site-tags
 Description: This powerful plugin allows you to simply display a global tag cloud for your entire WordPress Multisite network. How cool is that!
 Author: Andrew Billits (Incsub)
-Version: 2.0.1
+Version: 2.1
 Author URI: http://premium.wpmudev.org
 WDP ID: 105
 */
@@ -155,6 +155,9 @@ function global_site_tags_site_admin_options() {
 	$global_site_tags_border_color = get_site_option('global_site_tags_border_color', '#CFD0CB');
 	$global_site_tags_banned_tags = get_site_option('global_site_tags_banned_tags', 'uncategorized');
 	$global_site_tags_tag_cloud_order = get_site_option('global_site_tags_tag_cloud_order', 'count');
+
+	$global_site_tags_post_type = get_site_option('global_site_tags_post_type', 'post');
+
 	?>
 		<h3><?php _e('Site Tags', "globalsitetags") ?></h3>
 		<table class="form-table">
@@ -204,8 +207,37 @@ function global_site_tags_site_admin_options() {
 				</select>
                 <br /><?php //_e('') ?></td>
             </tr>
+
+			<tr valign="top">
+	                <th width="33%" scope="row"><?php _e('List Post Type', 'globalsitetags') ?></th>
+	                <td>
+					<select name="global_site_tags_post_type" id="global_site_tags_post_type">
+					   <option value="all" <?php selected( $global_site_tags_post_type, 'all' ); ?> ><?php _e('all', 'globalsitetags'); ?></option>
+						<?php
+						$post_types = global_site_tags_get_post_types();
+						if(!empty($post_types)) {
+							foreach($post_types as $r) {
+								?>
+								<option value="<?php echo $r; ?>" <?php selected( $global_site_tags_post_type, $r ); ?> ><?php _e($r, 'globalsitetags'); ?></option>
+								<?php
+							}
+						}
+						?>
+					</select></td>
+	        </tr>
+
 		</table>
 	<?php
+}
+
+function global_site_tags_get_post_types() {
+	global $wpdb;
+
+	$sql = $wpdb->prepare( "SELECT post_type FROM " . $wpdb->base_prefix . "site_posts GROUP BY post_type" );
+
+	$results = $wpdb->get_col( $sql );
+
+	return $results;
 }
 
 function global_site_tags_site_admin_options_process() {
@@ -216,6 +248,8 @@ function global_site_tags_site_admin_options_process() {
 	update_site_option( 'global_site_tags_border_color' , trim( $_POST['global_site_tags_border_color'] ));
 	update_site_option( 'global_site_tags_banned_tags' , trim( $_POST['global_site_tags_banned_tags'] ));
 	update_site_option( 'global_site_tags_tag_cloud_order' , trim( $_POST['global_site_tags_tag_cloud_order'] ));
+
+	update_site_option('global_site_tags_post_type', $_POST['global_site_tags_post_type'] );
 }
 
 function global_site_tags_rewrite($wp_rewrite){
@@ -271,10 +305,13 @@ function global_site_tags_url_parse(){
 	return $global_site_tags;
 }
 
-function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_size = 14,$high_font_size = 52,$class,$cloud_banned_tags = '') {
+function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_size = 14,$high_font_size = 52,$class,$cloud_banned_tags = '', $global_site_tags_post_type = 'post') {
 	global $wpdb, $current_site, $global_site_tags_base;
 	$global_site_tags_banned_tags = get_site_option('global_site_tags_banned_tags', 'uncategorized');
 	$global_site_tags_tag_cloud_order = get_site_option('global_site_tags_tag_cloud_order', 'count');
+
+	//$global_site_tags_post_type = get_site_option('global_site_tags_post_type', 'post');
+
 	$global_site_tags_banned_tags = str_replace(' , ', ',', $global_site_tags_banned_tags);
 	$global_site_tags_banned_tags = str_replace(' ,', ',', $global_site_tags_banned_tags);
 	$global_site_tags_banned_tags = str_replace(', ', ',', $global_site_tags_banned_tags);
@@ -286,7 +323,11 @@ function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_si
 		$global_site_tags_banned_tags_list = array_merge($cloud_banned_tags,global_site_tags_banned_tags_list);
 	}
 
-	$query = "SELECT count(*) as term_count, t.term_id FROM " . $wpdb->base_prefix . "site_terms as t INNER JOIN " . $wpdb->base_prefix . "site_term_relationships AS tr ON t.term_id = tr.term_id WHERE t.type = 'post_tag' GROUP BY t.term_id";
+	if($global_site_tags_post_type == 'all') {
+		$query = "SELECT count(*) as term_count, t.term_id FROM " . $wpdb->base_prefix . "site_terms as t INNER JOIN " . $wpdb->base_prefix . "site_term_relationships AS tr ON t.term_id = tr.term_id WHERE t.type = 'post_tag' GROUP BY t.term_id";
+	} else {
+		$query = "SELECT count(*) as term_count, t.term_id FROM " . $wpdb->base_prefix . "site_terms as t INNER JOIN " . $wpdb->base_prefix . "site_term_relationships AS tr ON t.term_id = tr.term_id INNER JOIN " . $wpdb->base_prefix . "site_posts AS sp ON sp.site_post_id = tr.site_post_id WHERE t.type = 'post_tag' AND sp.post_type = '" . $global_site_tags_post_type . "' GROUP BY t.term_id";
+	}
 
 	if ( empty($order_by) ) {
 		$order_by = $global_site_tags_tag_cloud_order;
@@ -423,10 +464,13 @@ function global_site_tags_output($content) {
 		$global_site_tags_border_color = get_site_option('global_site_tags_border_color', '#CFD0CB');
 		$global_site_tags_banned_tags = get_site_option('global_site_tags_banned_tags', 'uncategorized');
 		$global_site_tags_tag_cloud_order = get_site_option('global_site_tags_tag_cloud_order', 'count');
+
+		$global_site_tags_post_type = get_site_option('global_site_tags_post_type', 'post');
+
 		$global_site_tags = global_site_tags_url_parse();
 		if ( $global_site_tags['page_type'] == 'landing' ) {
 			//=====================================//
-			$content .= global_site_tags_tag_cloud($content, 50, $global_site_tags_tag_cloud_order, 14, 52, '' ,'');
+			$content .= global_site_tags_tag_cloud($content, 50, $global_site_tags_tag_cloud_order, 14, 52, '' ,'', $global_site_tags_post_type);
 			//=====================================//
 		} else if ( $global_site_tags['page_type'] == 'tag' ) {
 			//=====================================//
@@ -445,7 +489,12 @@ function global_site_tags_output($content) {
 				$math = $global_site_tags_per_page * $math;
 				$start = $math;
 			}
-			$query = "SELECT * FROM " . $wpdb->base_prefix . "site_posts WHERE post_terms LIKE '%|" . $tag_id . "|%' AND blog_public = 1 ORDER BY site_post_id DESC";
+
+			if($global_site_tags_post_type == 'all') {
+				$query = "SELECT * FROM " . $wpdb->base_prefix . "site_posts WHERE post_terms LIKE '%|" . $tag_id . "|%' AND blog_public = 1 ORDER BY site_post_id DESC";
+			} else {
+				$query = "SELECT * FROM " . $wpdb->base_prefix . "site_posts WHERE post_terms LIKE '%|" . $tag_id . "|%' AND blog_public = 1 AND post_type = '" . $global_site_tags_post_type . "' ORDER BY site_post_id DESC";
+			}
 			$query .= " LIMIT " . intval( $start ) . ", " . intval( $global_site_tags_per_page );
 			if ( !empty( $global_site_tags['tag'] ) ) {
 				$posts = $wpdb->get_results( $query, ARRAY_A );
@@ -520,8 +569,17 @@ function global_site_tags_output($content) {
 function global_site_tags_navigation_output($content, $per_page, $page, $tag, $next){
 	global $wpdb, $current_site, $global_site_tags_base;
 
+	$global_site_tags_post_type = get_site_option('global_site_tags_post_type', 'post');
+
 	$tag_id = $wpdb->get_var("SELECT term_id FROM " . $wpdb->base_prefix . "site_terms WHERE slug = '" . $tag . "'");
-	$post_count = $wpdb->get_var("SELECT COUNT(*) FROM " . $wpdb->base_prefix . "site_posts WHERE post_terms LIKE '%|" . $tag_id . "|%' AND blog_public = 1 ORDER BY site_post_id DESC");
+
+
+	if($global_site_tags_post_type == 'all') {
+		$post_count = $wpdb->get_var("SELECT COUNT(*) FROM " . $wpdb->base_prefix . "site_posts WHERE post_terms LIKE '%|" . $tag_id . "|%' AND blog_public = 1 ORDER BY site_post_id DESC");
+	} else {
+		$post_count = $wpdb->get_var("SELECT COUNT(*) FROM " . $wpdb->base_prefix . "site_posts WHERE post_terms LIKE '%|" . $tag_id . "|%' AND blog_public = 1 AND post_type = '" . $global_site_tags_post_type . "' ORDER BY site_post_id DESC");
+	}
+
 	//$post_count = $post_count - 1;
 
 	//generate page div
