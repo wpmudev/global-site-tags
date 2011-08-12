@@ -4,7 +4,7 @@ Plugin Name: Global Site Tags
 Plugin URI: http://premium.wpmudev.org/project/global-site-tags
 Description: This powerful plugin allows you to simply display a global tag cloud for your entire WordPress Multisite network. How cool is that!
 Author: Andrew Billits (Incsub)
-Version: 2.1
+Version: 2.1.1
 Author URI: http://premium.wpmudev.org
 WDP ID: 105
 */
@@ -41,7 +41,7 @@ if ( !function_exists( 'wdp_un_check' ) ) {
 //---Config---------------------------------------------------------------//
 //------------------------------------------------------------------------//
 
-$global_site_tags_current_version = '2.0.1';
+$global_site_tags_current_version = '2.1.1';
 $global_site_tags_base = 'tags'; //domain.tld/BASE/ Ex: domain.tld/tags/
 
 //------------------------------------------------------------------------//
@@ -51,7 +51,7 @@ $global_site_tags_base = 'tags'; //domain.tld/BASE/ Ex: domain.tld/tags/
 if ($current_blog->domain . $current_blog->path == $current_site->domain . $current_site->path){
 	add_filter('generate_rewrite_rules','global_site_tags_rewrite');
 	add_action('admin_head', 'global_site_tags_make_current');
-	add_filter('the_content', 'global_site_tags_output', 20);
+	add_filter('the_content', 'global_site_tags_output');
 	add_filter('the_title', 'global_site_tags_title_output', 99, 2);
 	add_action('admin_footer', 'global_site_tags_page_setup');
 }
@@ -307,6 +307,7 @@ function global_site_tags_url_parse(){
 
 function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_size = 14,$high_font_size = 52,$class,$cloud_banned_tags = '', $global_site_tags_post_type = 'post') {
 	global $wpdb, $current_site, $global_site_tags_base;
+
 	$global_site_tags_banned_tags = get_site_option('global_site_tags_banned_tags', 'uncategorized');
 	$global_site_tags_tag_cloud_order = get_site_option('global_site_tags_tag_cloud_order', 'count');
 
@@ -320,7 +321,7 @@ function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_si
 	$global_site_tags_banned_tags_list = explode(',', $global_site_tags_banned_tags);
 
 	if ( is_array( $cloud_banned_tags ) ) {
-		$global_site_tags_banned_tags_list = array_merge($cloud_banned_tags,global_site_tags_banned_tags_list);
+		$global_site_tags_banned_tags_list = array_merge($cloud_banned_tags, $global_site_tags_banned_tags_list);
 	}
 
 	if($global_site_tags_post_type == 'all') {
@@ -398,6 +399,7 @@ function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_si
 
 		//loop through and toss out the tag cloud
 		$counter = 1;
+
 		//print_r($tags_array);
 		$content .= '<div>';
 		foreach ($tags_array as $tag){
@@ -470,7 +472,7 @@ function global_site_tags_output($content) {
 		$global_site_tags = global_site_tags_url_parse();
 		if ( $global_site_tags['page_type'] == 'landing' ) {
 			//=====================================//
-			$content .= global_site_tags_tag_cloud($content, 50, $global_site_tags_tag_cloud_order, 14, 52, '' ,'', $global_site_tags_post_type);
+			$content = global_site_tags_tag_cloud($content, 50, $global_site_tags_tag_cloud_order, 14, 52, '' ,'', $global_site_tags_post_type);
 			//=====================================//
 		} else if ( $global_site_tags['page_type'] == 'tag' ) {
 			//=====================================//
