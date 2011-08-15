@@ -150,6 +150,7 @@ function global_site_tags_page_setup() {
 
 function global_site_tags_site_admin_options() {
 	$global_site_tags_per_page = get_site_option('global_site_tags_per_page', '10');
+	$global_site_tags_shown = get_site_option('global_site_tags_shown', '50');
 	$global_site_tags_background_color = get_site_option('global_site_tags_background_color', '#F2F2EA');
 	$global_site_tags_alternate_background_color = get_site_option('global_site_tags_alternate_background_color', '#FFFFFF');
 	$global_site_tags_border_color = get_site_option('global_site_tags_border_color', '#CFD0CB');
@@ -161,6 +162,23 @@ function global_site_tags_site_admin_options() {
 	?>
 		<h3><?php _e('Site Tags', "globalsitetags") ?></h3>
 		<table class="form-table">
+			<tr valign="top">
+                <th width="33%" scope="row"><?php _e('Tags Shown', "globalsitetags") ?></th>
+                <td>
+				<select name="global_site_tags_shown" id="global_site_tags_shown">
+				   <option value="5" <?php if ( $global_site_tags_shown == '5' ) { echo 'selected="selected"'; } ?> ><?php _e('5', "globalsitetags"); ?></option>
+				   <option value="10" <?php if ( $global_site_tags_shown == '10' ) { echo 'selected="selected"'; } ?> ><?php _e('10', "globalsitetags"); ?></option>
+				   <option value="15" <?php if ( $global_site_tags_shown == '15' ) { echo 'selected="selected"'; } ?> ><?php _e('15', "globalsitetags"); ?></option>
+				   <option value="20" <?php if ( $global_site_tags_shown == '20' ) { echo 'selected="selected"'; } ?> ><?php _e('20', "globalsitetags"); ?></option>
+				   <option value="25" <?php if ( $global_site_tags_shown == '25' ) { echo 'selected="selected"'; } ?> ><?php _e('25', "globalsitetags"); ?></option>
+				   <option value="30" <?php if ( $global_site_tags_shown == '30' ) { echo 'selected="selected"'; } ?> ><?php _e('30', "globalsitetags"); ?></option>
+				   <option value="35" <?php if ( $global_site_tags_shown == '35' ) { echo 'selected="selected"'; } ?> ><?php _e('35', "globalsitetags"); ?></option>
+				   <option value="40" <?php if ( $global_site_tags_shown == '40' ) { echo 'selected="selected"'; } ?> ><?php _e('40', "globalsitetags"); ?></option>
+				   <option value="45" <?php if ( $global_site_tags_shown == '45' ) { echo 'selected="selected"'; } ?> ><?php _e('45', "globalsitetags"); ?></option>
+				   <option value="50" <?php if ( $global_site_tags_shown == '50' ) { echo 'selected="selected"'; } ?> ><?php _e('50', "globalsitetags"); ?></option>
+				</select>
+                <br /><?php //_e('') ?></td>
+            </tr>
             <tr valign="top">
                 <th width="33%" scope="row"><?php _e('Listing Per Page', "globalsitetags") ?></th>
                 <td>
@@ -242,6 +260,7 @@ function global_site_tags_get_post_types() {
 
 function global_site_tags_site_admin_options_process() {
 
+	update_site_option( 'global_site_tags_shown' , $_POST['global_site_tags_shown']);
 	update_site_option( 'global_site_tags_per_page' , $_POST['global_site_tags_per_page']);
 	update_site_option( 'global_site_tags_background_color' , trim( $_POST['global_site_tags_background_color'] ));
 	update_site_option( 'global_site_tags_alternate_background_color' , trim( $_POST['global_site_tags_alternate_background_color'] ));
@@ -460,6 +479,7 @@ function global_site_tags_title_output($title, $post_ID = '') {
 function global_site_tags_output($content) {
 	global $wpdb, $current_site, $post, $global_site_tags_base, $members_directory_base;
 	if ( $post->post_name == $global_site_tags_base ) {
+		$global_site_tags_shown = get_site_option('global_site_tags_shown', '50');
 		$global_site_tags_per_page = get_site_option('global_site_tags_per_page', '10');
 		$global_site_tags_background_color = get_site_option('global_site_tags_background_color', '#F2F2EA');
 		$global_site_tags_alternate_background_color = get_site_option('global_site_tags_alternate_background_color', '#FFFFFF');
@@ -472,7 +492,7 @@ function global_site_tags_output($content) {
 		$global_site_tags = global_site_tags_url_parse();
 		if ( $global_site_tags['page_type'] == 'landing' ) {
 			//=====================================//
-			$content = global_site_tags_tag_cloud($content, $global_site_tags_per_page, $global_site_tags_tag_cloud_order, 14, 52, '' ,'', $global_site_tags_post_type);
+			$content = global_site_tags_tag_cloud($content, $global_site_tags_shown, $global_site_tags_tag_cloud_order, 14, 52, '' ,'', $global_site_tags_post_type);
 			//=====================================//
 		} else if ( $global_site_tags['page_type'] == 'tag' ) {
 			//=====================================//
@@ -501,6 +521,7 @@ function global_site_tags_output($content) {
 			if ( !empty( $global_site_tags['tag'] ) ) {
 				$posts = $wpdb->get_results( $query, ARRAY_A );
 			}
+
 			//=====================================//
 			if ( count( $posts ) > 0 ) {
 				if ( count( $posts ) < $global_site_tags_per_page ) {
