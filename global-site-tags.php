@@ -3,7 +3,7 @@
 Plugin Name: Global Site Tags
 Plugin URI: http://premium.wpmudev.org/project/global-site-tags
 Description: This powerful plugin allows you to simply display a global tag cloud for your entire WordPress Multisite network. How cool is that!
-Author: Andrew Billits (Incsub)
+Author: Andrew Billits (Incsub) / Barry (Incsub)
 Version: 2.1.2
 Author URI: http://premium.wpmudev.org
 WDP ID: 105
