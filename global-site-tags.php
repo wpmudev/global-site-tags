@@ -10,7 +10,7 @@ WDP ID: 105
 */
 
 /*
-Copyright 2007-2009 Incsub (http://incsub.com)
+Copyright 2012 Incsub (http://incsub.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
@@ -45,7 +45,8 @@ class globalsitetags {
 		add_action( 'plugins_loaded', array( &$this, 'global_site_tags_internationalisation' ) );
 
 		if ($current_blog->domain . $current_blog->path == $current_site->domain . $current_site->path){
-			add_filter('generate_rewrite_rules', array( &$this, 'global_site_tags_rewrite' ) );
+			add_action('generate_rewrite_rules', array(&$this, 'add_rewrite'));
+
 			add_action('admin_head', array( &$this, 'global_site_tags_make_current' ) );
 			add_filter('the_content', array( &$this, 'global_site_tags_output' ) );
 			add_filter('the_title', array( &$this, 'global_site_tags_title_output' ) , 99, 2);
@@ -55,7 +56,11 @@ class globalsitetags {
 		add_action('wpmu_options', array( &$this, 'global_site_tags_site_admin_options' ) );
 		add_action('update_wpmu_options', array( &$this, 'global_site_tags_site_admin_options_process' ) );
 
-
+		$version = get_site_option('globalsitetags_version', false);
+		if($version === false || $version < $this->build) {
+			update_site_option('globalsitetags_version', $this->build);
+			$this->install( $version );
+		}
 
 	}
 
@@ -63,76 +68,39 @@ class globalsitetags {
 		$this->__construct();
 	}
 
+	function install( $fromversion ) {
+
+		flush_rewrite_rules();
+
+	}
+
+	function add_rewrite( $wp_rewrite ) {
+
+		$new_rules = array();
+
+		$new_rules[ $this->global_site_tags_base . '/([^/]+)/([^/]+)/([^/]+)/([^/]+)/?$' ] = 'index.php?pagename=' . $this->global_site_tags_base;
+		$new_rules[ $this->global_site_tags_base . '/([^/]+)/([^/]+)/([^/]+)/?$' ] = 'index.php?pagename=' . $this->global_site_tags_base;
+		$new_rules[ $this->global_site_tags_base . '/([^/]+)/([^/]+)/?$' ] = 'index.php?pagename=' . $this->global_site_tags_base;
+		$new_rules[ $this->global_site_tags_base . '/([^/]+)/?$' ] = 'index.php?pagename=' . $this->global_site_tags_base;
+
+		$new_rules = apply_filters('globalsitetags_api_rules', $new_rules);
+
+	  	$wp_rewrite->rules = $new_rules + $wp_rewrite->rules;
+
+		return $wp_rewrite;
+
+	}
+
 	function global_site_tags_internationalisation() {
 		// Load the text-domain
+
 		$locale = apply_filters( 'globalsitetags_locale', get_locale() );
+
 		$mofile = dirname(__FILE__) . "/languages/globalsitetags-$locale.mo";
 
 		if ( file_exists( $mofile ) )
 			load_textdomain( 'globalsitetags', $mofile );
-	}
 
-	function global_site_tags_make_current() {
-		global $wpdb, $post_indexer_current_version;
-		if (get_site_option( "global_site_tags_version" ) == '') {
-			add_site_option( 'global_site_tags_version', '0.0.0' );
-		}
-
-		if (get_site_option( "global_site_tags_version" ) == $global_site_tags_current_version) {
-			// do nothing
-		} else {
-			//update to current version
-			update_site_option( "global_site_tags_installed", "no" );
-			update_site_option( "global_site_tags_version", $global_site_tags_current_version );
-		}
-		global_site_tags_global_install();
-		//--------------------------------------------------//
-		if (get_option( "global_site_tags_version" ) == '') {
-			add_option( 'global_site_tags_version', '0.0.0' );
-		}
-
-		if (get_option( "global_site_tags_version" ) == $post_indexer_current_version) {
-			// do nothing
-		} else {
-			//update to current version
-			update_option( "global_site_tags_version", $post_indexer_current_version );
-			global_site_tags_blog_install();
-		}
-	}
-
-	function global_site_tags_blog_install() {
-		global $wpdb, $post_indexer_current_version;
-		//$post_indexer_table1 = "";
-		//$wpdb->query( $post_indexer_table1 );
-	}
-
-	function global_site_tags_global_install() {
-		global $wpdb, $post_indexer_current_version;
-		if (get_site_option( "global_site_tags_installed" ) == '') {
-			add_site_option( 'global_site_tags_installed', 'no' );
-		}
-
-		if (get_site_option( "global_site_tags_installed" ) == "yes") {
-			// do nothing
-		} else {
-
-			$global_site_tags_table1 = "CREATE TABLE `" . $wpdb->base_prefix . "sitecategories` (
-			  `cat_ID` bigint(20) NOT NULL auto_increment,
-			  `cat_name` varchar(55) NOT NULL default '',
-			  `category_nicename` varchar(200) NOT NULL default '',
-			  `last_updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-			  PRIMARY KEY  (`cat_ID`),
-			  KEY `category_nicename` (`category_nicename`),
-			  KEY `last_updated` (`last_updated`)
-			);";
-
-			$wpdb->query( $global_site_tags_table1 );
-
-			update_site_option( "global_site_tags_installed", "yes" );
-
-			$global_site_tags_wp_rewrite = new WP_Rewrite;
-			$global_site_tags_wp_rewrite->flush_rules();
-		}
 	}
 
 	function global_site_tags_page_setup() {
