@@ -32,12 +32,11 @@ class globalsitetags {
 
 	var $db;
 
-	var $global_site_tags_current_version = '2.1.1';
 	var $global_site_tags_base = 'tags'; //domain.tld/BASE/ Ex: domain.tld/tags/
 
 	function __construct() {
 
-		global $wpdb;
+		global $wpdb, $current_site;
 
 		// Get a local handle to the database
 		$this->db =& $wpdb;
