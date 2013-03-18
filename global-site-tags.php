@@ -10,7 +10,7 @@ WDP ID: 105
 */
 
 /*
-Copyright 2012 Incsub (http://incsub.com)
+Copyright 2013 Incsub (http://incsub.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License (Version 2 - GPLv2) as published by
@@ -44,9 +44,15 @@ class globalsitetags {
 		add_action( 'plugins_loaded', array( &$this, 'global_site_tags_internationalisation' ) );
 
 		if ($current_blog->domain . $current_blog->path == $current_site->domain . $current_site->path){
-			add_action('generate_rewrite_rules', array(&$this, 'add_rewrite'));
 
-			add_action('admin_head', array( &$this, 'global_site_tags_make_current' ) );
+			if( get_option('gst_installed', 0) < $this->build || get_option('gst_installed', 0) == 'yes' ) {
+				add_action('init', array( &$this, 'initialise_plugin') );
+			}
+
+			// Add the rewrites
+			add_action('generate_rewrite_rules', array(&$this, 'add_rewrite'));
+			add_filter('query_vars', array(&$this, 'add_queryvars'));
+
 			add_filter('the_content', array( &$this, 'global_site_tags_output' ) );
 			add_filter('the_title', array( &$this, 'global_site_tags_title_output' ) , 99, 2);
 			add_action('admin_footer', array( &$this, 'global_site_tags_page_setup' ) );
@@ -55,11 +61,6 @@ class globalsitetags {
 		add_action('wpmu_options', array( &$this, 'global_site_tags_site_admin_options' ) );
 		add_action('update_wpmu_options', array( &$this, 'global_site_tags_site_admin_options_process' ) );
 
-		$version = get_site_option('globalsitetags_version', false);
-		if($version === false || $version < $this->build) {
-			update_site_option('globalsitetags_version', $this->build);
-			$this->install( $version );
-		}
 
 	}
 
@@ -67,24 +68,45 @@ class globalsitetags {
 		$this->__construct();
 	}
 
-	function install( $fromversion ) {
+	function initialise_plugin() {
+		$this->global_site_tags_flush_rules();
 
-		flush_rewrite_rules();
+		$this->global_site_tags_page_setup();
 
+		update_option('gst_installed', $this->build);
+	}
+
+	function global_site_tags_flush_rules() {
+    	global $wp_rewrite;
+
+        $wp_rewrite->flush_rules();
+	}
+
+	function add_queryvars($vars) {
+		// This function add the namespace (if it hasn't already been added) and the
+		// eventperiod queryvars to the list that WordPress is looking for.
+		// Note: Namespace provides a means to do a quick check to see if we should be doing anything
+
+		if(!in_array('namespace',$vars)) $vars[] = 'namespace';
+		if(!in_array('tag',$vars)) $vars[] = 'tag';
+		if(!in_array('paged',$vars)) $vars[] = 'paged';
+		if(!in_array('type',$vars)) $vars[] = 'type';
+
+		return $vars;
 	}
 
 	function add_rewrite( $wp_rewrite ) {
 
+		// This function adds in the api rewrite rules
+		// Note the addition of the namespace variable so that we know these are vent based
+		// calls
 		$new_rules = array();
 
-		$new_rules[ $this->global_site_tags_base . '/([^/]+)/([^/]+)/([^/]+)/([^/]+)/?$' ] = 'index.php?pagename=' . $this->global_site_tags_base;
-		$new_rules[ $this->global_site_tags_base . '/([^/]+)/([^/]+)/([^/]+)/?$' ] = 'index.php?pagename=' . $this->global_site_tags_base;
-		$new_rules[ $this->global_site_tags_base . '/([^/]+)/([^/]+)/?$' ] = 'index.php?pagename=' . $this->global_site_tags_base;
-		$new_rules[ $this->global_site_tags_base . '/([^/]+)/?$' ] = 'index.php?pagename=' . $this->global_site_tags_base;
+		$new_rules[$this->global_site_tags_base . '/(.+)/page/?([0-9]{1,})'] = 'index.php?namespace=gst&tag=' . $wp_rewrite->preg_index(1) . '&paged=' . $wp_rewrite->preg_index(2) . '&type=tag&pagename=' . $this->global_site_tags_base;
+		$new_rules[$this->global_site_tags_base . '/(.+)'] = 'index.php?namespace=gst&tag=' . $wp_rewrite->preg_index(1) . '&type=tag&pagename=' . $this->global_site_tags_base;
+		$new_rules[$this->global_site_tags_base . ''] = 'index.php?namespace=gst&type=tag&pagename=' . $this->global_site_tags_base;
 
-		$new_rules = apply_filters('globalsitetags_api_rules', $new_rules);
-
-	  	$wp_rewrite->rules = $new_rules + $wp_rewrite->rules;
+		$wp_rewrite->rules = $new_rules + $wp_rewrite->rules;
 
 		return $wp_rewrite;
 
@@ -92,14 +114,11 @@ class globalsitetags {
 
 	function global_site_tags_internationalisation() {
 		// Load the text-domain
-
 		$locale = apply_filters( 'globalsitetags_locale', get_locale() );
-
-		$mofile = dirname(__FILE__) . "/languages/globalsitetags-$locale.mo";
+		$mofile = plugin_basename(dirname(__FILE__) . "/languages/globalsitetags-$locale.mo");
 
 		if ( file_exists( $mofile ) )
-			load_textdomain( 'globalsitetags', $mofile );
-
+			load_plugin_textdomain( 'globalsitetags', false, $mofile );
 	}
 
 	function global_site_tags_page_setup() {
@@ -214,11 +233,10 @@ class globalsitetags {
 	}
 
 	function global_site_tags_get_post_types() {
-		global $wpdb;
 
-		$sql = $wpdb->prepare( "SELECT post_type FROM " . $wpdb->base_prefix . "site_posts GROUP BY post_type" );
+		$sql = "SELECT post_type FROM " . $this->db->base_prefix . "network_posts GROUP BY post_type";
 
-		$results = $wpdb->get_col( $sql );
+		$results = $this->db->get_col( $sql );
 
 		return $results;
 	}
@@ -234,59 +252,6 @@ class globalsitetags {
 		update_site_option( 'global_site_tags_tag_cloud_order' , trim( $_POST['global_site_tags_tag_cloud_order'] ));
 
 		update_site_option('global_site_tags_post_type', $_POST['global_site_tags_post_type'] );
-	}
-
-	function global_site_tags_rewrite($wp_rewrite){
-		global $global_site_tags_base;
-	    $global_site_tags_rules = array(
-	        $global_site_tags_base . '/([^/]+)/([^/]+)/([^/]+)/([^/]+)/?$' => 'index.php?pagename=' . $global_site_tags_base,
-	        $global_site_tags_base . '/([^/]+)/([^/]+)/([^/]+)/?$' => 'index.php?pagename=' . $global_site_tags_base,
-	        $global_site_tags_base . '/([^/]+)/([^/]+)/?$' => 'index.php?pagename=' . $global_site_tags_base,
-	        $global_site_tags_base . '/([^/]+)/?$' => 'index.php?pagename=' . $global_site_tags_base
-	    );
-	    $wp_rewrite->rules = $global_site_tags_rules + $wp_rewrite->rules;
-		return $wp_rewrite;
-	}
-
-	function global_site_tags_url_parse(){
-		global $wpdb, $current_site, $global_site_tags_base;
-		$global_site_tags_url = $_SERVER['REQUEST_URI'];
-		if ( $current_site->path != '/' ) {
-			$global_site_tags_url = str_replace('/' . $current_site->path . '/', '', $global_site_tags_url);
-			$global_site_tags_url = str_replace($current_site->path . '/', '', $global_site_tags_url);
-			$global_site_tags_url = str_replace($current_site->path, '', $global_site_tags_url);
-		}
-		$global_site_tags_url = ltrim($global_site_tags_url, "/");
-		$global_site_tags_url = rtrim($global_site_tags_url, "/");
-		$global_site_tags_url = ltrim($global_site_tags_url, $global_site_tags_base);
-		$global_site_tags_url = ltrim($global_site_tags_url, "/");
-
-		list($global_site_tags_1, $global_site_tags_2, $global_site_tags_3, $global_site_tags_4) = explode("/", $global_site_tags_url);
-
-		$page_type = '';
-		$page_subtype = '';
-		$page = '';
-		$post = '';
-
-		if ( empty( $global_site_tags_1 ) ) {
-			//landing
-			$page_type = 'landing';
-		} else {
-			//tag
-			$tag = $global_site_tags_1;
-			$page_type = 'tag';
-			$page = $global_site_tags_2;
-			if ( empty( $page ) ) {
-				$page = 1;
-			}
-			$tag = urldecode( $tag );
-		}
-
-		$global_site_tags['page_type'] = $page_type;
-		$global_site_tags['page'] = $page;
-		$global_site_tags['tag'] = $tag;
-
-		return $global_site_tags;
 	}
 
 	function global_site_tags_tag_cloud($content,$number,$order_by = '',$low_font_size = 14,$high_font_size = 52,$class,$cloud_banned_tags = '', $global_site_tags_post_type = 'post') {
