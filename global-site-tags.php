@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class globalsitetags {
 
-	var $build = 1;
+	var $build = 2;
 
 	var $db;
 
@@ -36,7 +36,7 @@ class globalsitetags {
 
 	function __construct() {
 
-		global $wpdb, $current_site;
+		global $wpdb, $current_site, $current_blog;
 
 		// Get a local handle to the database
 		$this->db =& $wpdb;
@@ -55,7 +55,7 @@ class globalsitetags {
 
 			add_filter('the_content', array( &$this, 'global_site_tags_output' ) );
 			add_filter('the_title', array( &$this, 'global_site_tags_title_output' ) , 99, 2);
-			add_action('admin_footer', array( &$this, 'global_site_tags_page_setup' ) );
+
 		}
 
 		add_action('wpmu_options', array( &$this, 'global_site_tags_site_admin_options' ) );
@@ -122,14 +122,13 @@ class globalsitetags {
 	}
 
 	function global_site_tags_page_setup() {
-		global $wpdb, $user_ID, $global_site_tags_base;
-		if ( get_site_option('global_site_tags_page_setup') != 'complete' && is_site_admin() ) {
-			$page_count = $wpdb->get_var("SELECT COUNT(*) FROM " . $wpdb->posts . " WHERE post_name = '" . $global_site_tags_base . "' AND post_type = 'page'");
-			if ( $page_count < 1 ) {
-				$wpdb->query( "INSERT INTO " . $wpdb->posts . " ( post_author, post_date, post_date_gmt, post_content, post_title, post_excerpt, post_status, comment_status, ping_status, post_password, post_name, to_ping, pinged, post_modified, post_modified_gmt, post_content_filtered, post_parent, guid, menu_order, post_type, post_mime_type, comment_count ) VALUES ( '" . $user_ID . "', '" . current_time( 'mysql' ) . "', '" . current_time( 'mysql' ) . "', '', 'Tags', '', 'publish', 'closed', 'closed', '', '" . $global_site_tags_base . "', '', '', '" . current_time( 'mysql' ) . "', '" . current_time( 'mysql' ) . "', '', 0, '', 0, 'page', '', 0 )" );
-			}
-			update_site_option('global_site_tags_page_setup', 'complete');
+		global $wpdb, $user_ID;
+
+		$page_count = $wpdb->get_var("SELECT COUNT(*) FROM " . $wpdb->posts . " WHERE post_name = '" . $this->global_site_tags_base . "' AND post_type = 'page'");
+		if ( $page_count < 1 ) {
+			$wpdb->query( "INSERT INTO " . $wpdb->posts . " ( post_author, post_date, post_date_gmt, post_content, post_title, post_excerpt, post_status, comment_status, ping_status, post_password, post_name, to_ping, pinged, post_modified, post_modified_gmt, post_content_filtered, post_parent, guid, menu_order, post_type, post_mime_type, comment_count ) VALUES ( '" . $user_ID . "', '" . current_time( 'mysql' ) . "', '" . current_time( 'mysql' ) . "', '', 'Tags', '', 'publish', 'closed', 'closed', '', '" . $this->global_site_tags_base . "', '', '', '" . current_time( 'mysql' ) . "', '" . current_time( 'mysql' ) . "', '', 0, '', 0, 'page', '', 0 )" );
 		}
+
 	}
 
 	function global_site_tags_site_admin_options() {
@@ -216,7 +215,7 @@ class globalsitetags {
 						<select name="global_site_tags_post_type" id="global_site_tags_post_type">
 						   <option value="all" <?php selected( $global_site_tags_post_type, 'all' ); ?> ><?php _e('all', 'globalsitetags'); ?></option>
 							<?php
-							$post_types = global_site_tags_get_post_types();
+							$post_types = $this->global_site_tags_get_post_types();
 							if(!empty($post_types)) {
 								foreach($post_types as $r) {
 									?>
@@ -391,7 +390,7 @@ class globalsitetags {
 	function global_site_tags_title_output($title, $post_ID = '') {
 		global $wpdb, $current_site, $post, $global_site_tags_base;
 		if ( $post->post_name == $global_site_tags_base && $post_ID == $post->ID) {
-			$global_site_tags = global_site_tags_url_parse();
+			//$global_site_tags = global_site_tags_url_parse();
 			if ( $global_site_tags['page_type'] == 'landing' ) {
 				$title = '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/">' . __('Tags') . '</a>';
 			} else {
@@ -408,7 +407,13 @@ class globalsitetags {
 
 	function global_site_tags_output($content) {
 		global $wpdb, $current_site, $post, $global_site_tags_base, $members_directory_base;
-		if ( $post->post_name == $global_site_tags_base ) {
+
+		global $network_query, $network_post;
+
+		global $wp_query;
+
+		if ( isset($wp_query->query_vars['namespace']) && $wp_query->query_vars['namespace'] == 'gst' && $wp_query->query_vars['type'] == 'tag' ) {
+
 			$global_site_tags_shown = get_site_option('global_site_tags_shown', '50');
 			$global_site_tags_per_page = get_site_option('global_site_tags_per_page', '10');
 			$global_site_tags_background_color = get_site_option('global_site_tags_background_color', '#F2F2EA');
@@ -418,6 +423,18 @@ class globalsitetags {
 			$global_site_tags_tag_cloud_order = get_site_option('global_site_tags_tag_cloud_order', 'count');
 
 			$global_site_tags_post_type = get_site_option('global_site_tags_post_type', 'post');
+
+			if(isset( $wp_query->query_vars['tag'] )) {
+				// Show the results list for the tag
+			} else {
+				// Show the tag cloud
+			}
+
+		}
+
+
+		if ( $post->post_name == $global_site_tags_base ) {
+
 
 			$global_site_tags = global_site_tags_url_parse();
 			if ( $global_site_tags['page_type'] == 'landing' ) {
@@ -597,5 +614,7 @@ class globalsitetags {
 	}
 
 }
+
+$globalsitetags = new globalsitetags();
 
 ?>
