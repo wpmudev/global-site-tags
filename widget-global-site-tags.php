@@ -4,7 +4,7 @@ Plugin Name: Global Site Tags Widget
 Plugin URI: http://premium.wpmudev.org/project/global-site-tags
 Description: This powerful plugin allows you to simply display a global tag cloud for your entire WordPress Multisite network. How cool is that!
 Author: Barry (Incsub)
-Version: 3.0
+Version: 3.0.1
 Author URI: http://premium.wpmudev.org
 */
 
@@ -54,6 +54,9 @@ class widget_global_site_tags extends WP_Widget {
 
 	//Displays the Widget
 	function widget($args, $instance) {
+
+		global $globalsitetags;
+
 		extract($args);
 		$title = apply_filters('widget_title', empty($instance['title']) ? '&nbsp;' : $instance['title']);
 		$lineOne = empty($instance['lineOne']) ? 'Hello' : $instance['lineOne'];
@@ -68,7 +71,7 @@ class widget_global_site_tags extends WP_Widget {
 
 		//Make the Hello World Example widget
 		//echo '<div style="text-align:center;padding:10px;">' . $lineOne . '<br />' . $lineTwo . "</div>";
-		echo global_site_tags_tag_cloud('',$instance['number'],$instance['tag_cloud_order'],$instance['low_font_size'],$instance['high_font_size'],'','', $instance['poststype']);
+		echo $globalsitetags->global_site_tags_tag_cloud( '', $instance['number'], $instance['tag_cloud_order'], $instance['low_font_size'], $instance['high_font_size'], '', '', $instance['poststype'] );
 
 		//After the widget
 		echo $after_widget;
@@ -168,7 +171,7 @@ class widget_global_site_tags extends WP_Widget {
 	function get_post_types() {
 		global $wpdb;
 
-		$sql = $wpdb->prepare( "SELECT post_type FROM " . $wpdb->base_prefix . "site_posts GROUP BY post_type" );
+		$sql = "SELECT post_type FROM " . $this->db->base_prefix . "network_posts GROUP BY post_type";
 
 		$results = $wpdb->get_col( $sql );
 
