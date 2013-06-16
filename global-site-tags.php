@@ -54,7 +54,7 @@ class globalsitetags {
 			add_filter('query_vars', array(&$this, 'add_queryvars'));
 
 			add_filter('the_content', array( &$this, 'global_site_tags_output' ), 20 );
-			//add_filter('the_title', array( &$this, 'global_site_tags_title_output' ) , 99, 2);
+			add_filter('the_title', array( &$this, 'global_site_tags_title_output' ) , 99, 2);
 
 		}
 
@@ -458,22 +458,21 @@ class globalsitetags {
 
 	function global_site_tags_title_output($title, $post_ID = '') {
 
-
 		global $wpdb, $current_site, $post, $global_site_tags_base;
-		if ( $post->post_name == $global_site_tags_base && $post_ID == $post->ID) {
+
+		global $wp_query;
+
+		if ( isset($wp_query->query_vars['namespace']) && $wp_query->query_vars['namespace'] == 'gst' && $wp_query->query_vars['type'] == 'tag' && !empty( $wp_query->query_vars['tag'] ) ) {
 			//$global_site_tags = global_site_tags_url_parse();
-			if ( $global_site_tags['page_type'] == 'landing' ) {
-				$title = '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/">' . __('Tags') . '</a>';
-			} else {
-				$tag_name = $wpdb->get_var("SELECT name FROM " . $wpdb->base_prefix . "site_terms WHERE slug = '" . $global_site_tags['tag'] . "'");
-				if ( $global_site_tags['page'] > 1 ) {
-					$title = '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/">' . __('Tags') . '</a> &raquo; ' . '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . $global_site_tags['tag'] . '/">' . $tag_name . '</a> &raquo; ' . '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . $global_site_tags['tag'] .  '/' . $global_site_tags['page'] . '/">' . $global_site_tags['page'] . '</a>';
-				} else {
-					$title = '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/">' . __('Tags') . '</a> &raquo; ' . '<a href="http://' . $current_site->domain . $current_site->path . $global_site_tags_base . '/' . $global_site_tags['tag'] . '/">' . $tag_name . '</a>';
-				}
-			}
+
+				$tag_name = $wpdb->get_var("SELECT name FROM " . $wpdb->base_prefix . "network_terms WHERE slug = '" . urldecode( $wp_query->query_vars['tag'] ) . "'");
+
+				$title = '<a href="http://' . $current_site->domain . $current_site->path . $this->global_site_tags_base . '/">' . $title . '</a> &raquo; ' . '<a href="http://' . $current_site->domain . $current_site->path . $this->global_site_tags_base . '/' . $wp_query->query_vars['tag'] . '/">' . $tag_name . '</a>';
+
 		}
+
 		return $title;
+
 	}
 
 	function global_site_tags_output( $content ) {

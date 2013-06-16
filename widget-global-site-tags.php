@@ -8,31 +8,12 @@ Version: 3.0.1
 Author URI: http://premium.wpmudev.org
 */
 
-//------------------------------------------------------------------------//
-//---Config---------------------------------------------------------------//
-//------------------------------------------------------------------------//
 $widget_global_site_tags_title = __('Global Site Tags', "globalsitetags");
 $widget_global_site_tags_nice_title = 'global_site_tags';
 $widget_global_site_tags_description = __('Displays tags from all blogs', "globalsitetags");
 $widget_global_site_tags_height = 600;
 $widget_global_site_tags_width = 300;
-//------------------------------------------------------------------------//
-//---Hook-----------------------------------------------------------------//
-//------------------------------------------------------------------------//
 
-add_action('widgets_init', 'widget_global_site_tags_init');
-
-//------------------------------------------------------------------------//
-//---Functions------------------------------------------------------------//
-//------------------------------------------------------------------------//
-
-function widget_global_site_tags_init() {
-	register_widget('widget_global_site_tags');
-}
-
-//------------------------------------------------------------------------//
-//---Classes--------------------------------------------------------------//
-//------------------------------------------------------------------------//
 class widget_global_site_tags extends WP_Widget {
 
 	//Declares the widget_global_site_tags class.
@@ -80,6 +61,7 @@ class widget_global_site_tags extends WP_Widget {
 
 	//Saves the widgets settings.
 	function update($new_instance, $old_instance) {
+
 		$instance = $old_instance;
 		$instance['title'] = strip_tags(stripslashes($new_instance['title']));
 		$instance['tag_cloud_order'] = strip_tags(stripslashes($new_instance['tag_cloud_order']));
@@ -171,7 +153,7 @@ class widget_global_site_tags extends WP_Widget {
 	function get_post_types() {
 		global $wpdb;
 
-		$sql = "SELECT post_type FROM " . $this->db->base_prefix . "network_posts GROUP BY post_type";
+		$sql = "SELECT post_type FROM " . $wpdb->base_prefix . "network_posts GROUP BY post_type";
 
 		$results = $wpdb->get_col( $sql );
 
@@ -179,4 +161,10 @@ class widget_global_site_tags extends WP_Widget {
 	}
 
 }
+
+function widget_global_site_tags_init() {
+	register_widget('widget_global_site_tags');
+}
+
+add_action('widgets_init', 'widget_global_site_tags_init');
 ?>
