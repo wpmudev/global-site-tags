@@ -4,7 +4,7 @@ Plugin Name: Global Site Tags
 Plugin URI: http://premium.wpmudev.org/project/global-site-tags
 Description: This powerful plugin allows you to simply display a global tag cloud for your entire WordPress Multisite network. How cool is that!
 Author: Barry (Incsub)
-Version: 3.0.1
+Version: 3.0.2
 Author URI: http://premium.wpmudev.org
 WDP ID: 105
 */
@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class globalsitetags {
 
-	var $build = 3;
+	var $build = 4;
 
 	var $db;
 
@@ -463,12 +463,17 @@ class globalsitetags {
 		global $wp_query;
 
 		if ( isset($wp_query->query_vars['namespace']) && $wp_query->query_vars['namespace'] == 'gst' && $wp_query->query_vars['type'] == 'tag' && !empty( $wp_query->query_vars['tag'] ) ) {
-			//$global_site_tags = global_site_tags_url_parse();
 
-				$tag_name = $wpdb->get_var("SELECT name FROM " . $wpdb->base_prefix . "network_terms WHERE slug = '" . urldecode( $wp_query->query_vars['tag'] ) . "'");
+				$page_id = get_site_option('global_site_tags_page');
 
-				$title = '<a href="http://' . $current_site->domain . $current_site->path . $this->global_site_tags_base . '/">' . $title . '</a> &raquo; ' . '<a href="http://' . $current_site->domain . $current_site->path . $this->global_site_tags_base . '/' . $wp_query->query_vars['tag'] . '/">' . $tag_name . '</a>';
 
+				if( (!empty($page_id) && $page_id == $post_ID) || (!empty($post) && $post->ID == $post_ID) ) {
+
+					$tag_name = $wpdb->get_var("SELECT name FROM " . $wpdb->base_prefix . "network_terms WHERE slug = '" . urldecode( $wp_query->query_vars['tag'] ) . "'");
+
+					$title = '<a href="http://' . $current_site->domain . $current_site->path . $this->global_site_tags_base . '/">' . $title . '</a> &raquo; ' . '<a href="http://' . $current_site->domain . $current_site->path . $this->global_site_tags_base . '/' . $wp_query->query_vars['tag'] . '/">' . $tag_name . '</a>';
+
+				}
 		}
 
 		return $title;
