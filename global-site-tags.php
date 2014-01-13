@@ -28,9 +28,11 @@ Network: true
 // | MA 02110-1301 USA                                                    |
 // +----------------------------------------------------------------------+
 
+if ( !defined( 'GLOBAL_SITE_TAGS_BLOG' ) ) define( 'GLOBAL_SITE_TAGS_BLOG', 1 );
+
 class globalsitetags {
 
-	var $build = 4;
+	var $build = 5;
 
 	/** @var wpdb */
 	var $db;
@@ -38,7 +40,7 @@ class globalsitetags {
 	var $global_site_tags_base = 'tags'; //domain.tld/BASE/ Ex: domain.tld/tags/
 
 	function __construct() {
-		global $wpdb, $current_site, $current_blog;
+		global $wpdb;
 
 		// Get a local handle to the database
 		$this->db = $wpdb;
@@ -47,8 +49,9 @@ class globalsitetags {
 		add_action( 'wpmu_options', array( $this, 'global_site_tags_site_admin_options' ) );
 		add_action( 'update_wpmu_options', array( $this, 'global_site_tags_site_admin_options_process' ) );
 
-		if ( $current_blog->domain . $current_blog->path == $current_site->domain . $current_site->path ) {
-			if ( get_option( 'gst_installed', 0 ) < $this->build || get_option( 'gst_installed', 0 ) == 'yes' ) {
+		if ( GLOBAL_SITE_TAGS_BLOG == get_current_blog_id() ) {
+			$installed = get_option( 'gst_installed', 0 );
+			if ( $installed < $this->build || $installed == 'yes' ) {
 				add_action( 'init', array( $this, 'initialise_plugin' ) );
 			}
 
@@ -106,8 +109,8 @@ class globalsitetags {
 	}
 
 	function global_site_tags_page_setup() {
-		if ( get_site_option( 'global_site_tags_page_setup' ) != 'complete' && is_super_admin() ) {
-			$page_id = get_site_option( 'global_site_tags_page' );
+		if ( get_option( 'global_site_tags_page_setup' ) != 'complete' && is_super_admin() ) {
+			$page_id = get_option( 'global_site_tags_page' );
 			if ( empty( $page_id ) ) {
 				// a page hasn't been set - so check if there is already one with the base name
 				$page_id = $this->db->get_var( "SELECT ID FROM {$this->db->posts} WHERE post_name = '{$this->global_site_tags_base}' AND post_type = 'page'" );
@@ -136,10 +139,10 @@ class globalsitetags {
 						"comment_count" => 0
 					) );
 				}
-				update_site_option( 'global_site_tags_page', $page_id );
+				update_option( 'global_site_tags_page', $page_id );
 			}
 
-			update_site_option( 'global_site_tags_page_setup', 'complete' );
+			update_option( 'global_site_tags_page_setup', 'complete' );
 		}
 	}
 
@@ -240,7 +243,7 @@ class globalsitetags {
 	}
 
 	function global_site_tags_tag_cloud( $content, $number, $order_by, $low_font_size, $high_font_size, $class, $cloud_banned_tags = false, $global_site_tags_post_type = 'post' ) {
-		global $wpdb, $current_site;
+		global $wpdb;
 
 		$global_site_tags_banned_tags = get_site_option( 'global_site_tags_banned_tags', 'uncategorized' );
 		$global_site_tags_tag_cloud_order = get_site_option( 'global_site_tags_tag_cloud_order', 'count' );
@@ -251,7 +254,12 @@ class globalsitetags {
 		}
 		$banned_tags = implode( "', '", array_map( 'esc_sql', array_unique( array_filter( array_map( 'trim', $banned_tags ) ) ) ) );
 
-		$base_url = trailingslashit( $current_site->domain . $current_site->path . $this->global_site_tags_base );
+		$base_url = trailingslashit( trailingslashit( home_url() ) . $this->global_site_tags_base );
+		if ( GLOBAL_SITE_TAGS_BLOG != get_current_blog_id() ) {
+			switch_to_blog( GLOBAL_SITE_TAGS_BLOG );
+			$base_url = trailingslashit( trailingslashit( home_url() ) . $this->global_site_tags_base );
+			restore_current_blog();
+		}
 
 		$query = "
 			SELECT COUNT(*) as 'count',
@@ -299,7 +307,7 @@ class globalsitetags {
 		global $wpdb, $current_site, $post, $wp_query;
 
 		if ( isset( $wp_query->query_vars['namespace'] ) && $wp_query->query_vars['namespace'] == 'gst' && $wp_query->query_vars['type'] == 'tag' && !empty( $wp_query->query_vars['tag'] ) ) {
-			$page_id = get_site_option( 'global_site_tags_page' );
+			$page_id = get_option( 'global_site_tags_page' );
 			if ( ( !empty( $page_id ) && $page_id == $post_ID ) || ( !empty( $post ) && $post->ID == $post_ID ) ) {
 				$tag_name = esc_sql( urldecode( $wp_query->query_vars['tag'] ) );
 				$tag_name = $wpdb->get_var( "SELECT name FROM {$wpdb->base_prefix}network_terms WHERE slug = '{$tag_name}'" );
