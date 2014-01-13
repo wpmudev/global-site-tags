@@ -1,0 +1,145 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Global Site Tags 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-01-13 13:51+0300\n"
+"PO-Revision-Date: 2014-01-13 13:51+0300\n"
+"Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
+"Language-Team: Incsub <barry@incsub.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c;_nc:4c,1,2;_x:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;_ex:1,2c;"
+"esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
+"_n_noop;_nc;_nx;_nx_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: ./..\n"
+
+#: ../widget-global-site-tags.php:11
+msgid "Global Site Tags"
+msgstr "Global Site Tags"
+
+#: ../widget-global-site-tags.php:13
+msgid "Displays tags from all blogs"
+msgstr "Displays tags from all blogs"
+
+#: ../widget-global-site-tags.php:84
+msgid "Widget Title"
+msgstr "Widget Title"
+
+#: ../widget-global-site-tags.php:89 ../global-site-tags.php:211
+msgid "Tag Cloud Order"
+msgstr "Tag Cloud Order"
+
+#: ../widget-global-site-tags.php:91 ../global-site-tags.php:214
+msgid "Tag Count"
+msgstr "Tag Count"
+
+#: ../widget-global-site-tags.php:92 ../global-site-tags.php:215
+msgid "Most Recent"
+msgstr "Most Recent"
+
+#: ../widget-global-site-tags.php:97
+msgid "Number of Tags"
+msgstr "Number of Tags"
+
+#: ../widget-global-site-tags.php:106
+msgid "Largest Font Size"
+msgstr "Largest Font Size"
+
+#: ../widget-global-site-tags.php:115
+msgid "Smallest Font Size"
+msgstr "Smallest Font Size"
+
+#: ../widget-global-site-tags.php:124
+msgid "Post Type"
+msgstr "Post Type"
+
+#: ../widget-global-site-tags.php:126 ../global-site-tags.php:223
+msgid "all"
+msgstr "all"
+
+#: ../widget-global-site-tags.php:132
+msgid "post"
+msgstr "post"
+
+#: ../global-site-tags.php:122
+msgid "Tags"
+msgstr "Tags"
+
+#: ../global-site-tags.php:159
+msgid "Site Tags"
+msgstr "Site Tags"
+
+#: ../global-site-tags.php:163
+msgid "Tags Shown"
+msgstr "Tags Shown"
+
+#: ../global-site-tags.php:173
+msgid "Listing Per Page"
+msgstr "Listing Per Page"
+
+#: ../global-site-tags.php:183
+msgid "Background Color"
+msgstr "Background Color"
+
+#: ../global-site-tags.php:186 ../global-site-tags.php:193
+#: ../global-site-tags.php:200
+msgid "Default"
+msgstr "Default"
+
+#: ../global-site-tags.php:190
+msgid "Alternate Background Color"
+msgstr "Alternate Background Color"
+
+#: ../global-site-tags.php:197
+msgid "Border Color"
+msgstr "Border Color"
+
+#: ../global-site-tags.php:204
+msgid "Banned Tags"
+msgstr "Banned Tags"
+
+#: ../global-site-tags.php:207
+msgid ""
+"Banned tags will not appear in tag clouds. Please separate tags with commas. "
+"Ex: tag1, tag2, tag3"
+msgstr ""
+"Banned tags will not appear in tag clouds. Please separate tags with commas. "
+"Ex: tag1, tag2, tag3"
+
+#: ../global-site-tags.php:220
+msgid "List Post Type"
+msgstr "List Post Type"
+
+#: ../global-site-tags.php:374 ../global-site-tags.php:376
+msgid "recent post(s)"
+msgstr "recent post(s)"
+
+#: ../global-site-tags.php:383
+msgid "There are no tags to display."
+msgstr "There are no tags to display."
+
+#: ../global-site-tags.php:471
+msgid "Posts"
+msgstr "Posts"
+
+#: ../global-site-tags.php:487
+msgid "Unknown"
+msgstr "Unknown"
+
+#: ../global-site-tags.php:501 ../global-site-tags.php:503
+msgid " wrote"
+msgstr " wrote"
+
+#: ../global-site-tags.php:507
+msgid "More"
+msgstr "More"
+
+#: ../global-site-tags.php:519
+msgid "Nothing found for search term(s)."
+msgstr "Nothing found for search term(s)."
