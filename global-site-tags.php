@@ -263,7 +263,7 @@ class globalsitetags {
 			SELECT count(*) as term_count, t.term_id FROM {$this->db->base_prefix}network_terms as t
 			 INNER JOIN {$this->db->base_prefix}network_term_taxonomy AS tt ON t.term_id = tt.term_id
 			 INNER JOIN {$this->db->base_prefix}network_term_relationships AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id
-			 INNER JOIN {$this->db->base_prefix}network_posts AS np ON np.ID = tr.object_id
+			 INNER JOIN {$this->db->base_prefix}network_posts AS np ON np.ID = tr.object_id AND np.BLOG_ID = tr.blog_id
 			 WHERE tt.taxonomy = 'post_tag'";
 
 		if ( $global_site_tags_post_type != 'all' ) {
@@ -409,121 +409,95 @@ class globalsitetags {
 	function global_site_tags_output( $content ) {
 		global $wpdb, $current_site, $post, $global_site_tags_base, $members_directory_base, $network_query, $network_post, $wp_query;
 
-		if ( isset( $wp_query->query_vars['namespace'] ) && $wp_query->query_vars['namespace'] == 'gst' && $wp_query->query_vars['type'] == 'tag' ) {
-			$global_site_tags_shown = get_site_option( 'global_site_tags_shown', '50' );
-			$global_site_tags_per_page = get_site_option( 'global_site_tags_per_page', '10' );
-			$global_site_tags_background_color = get_site_option( 'global_site_tags_background_color', '#F2F2EA' );
-			$global_site_tags_alternate_background_color = get_site_option( 'global_site_tags_alternate_background_color', '#FFFFFF' );
-			$global_site_tags_border_color = get_site_option( 'global_site_tags_border_color', '#CFD0CB' );
-			$global_site_tags_banned_tags = get_site_option( 'global_site_tags_banned_tags', 'uncategorized' );
-			$global_site_tags_tag_cloud_order = get_site_option( 'global_site_tags_tag_cloud_order', 'count' );
-			$global_site_tags_post_type = get_site_option( 'global_site_tags_post_type', 'post' );
+		if ( !isset( $wp_query->query_vars['namespace'] ) || $wp_query->query_vars['namespace'] != 'gst' || $wp_query->query_vars['type'] != 'tag' ) {
+			return $content;
+		}
 
-			if ( !empty( $wp_query->query_vars['tag'] ) ) {
-				// Show the results list for the tag
-				//=====================================//
-				$parameters = array();
+		$global_site_tags_shown = get_site_option( 'global_site_tags_shown', '50' );
+		$global_site_tags_per_page = get_site_option( 'global_site_tags_per_page', '10' );
+		$global_site_tags_background_color = get_site_option( 'global_site_tags_background_color', '#F2F2EA' );
+		$global_site_tags_alternate_background_color = get_site_option( 'global_site_tags_alternate_background_color', '#FFFFFF' );
+		$global_site_tags_border_color = get_site_option( 'global_site_tags_border_color', '#CFD0CB' );
+		$global_site_tags_banned_tags = get_site_option( 'global_site_tags_banned_tags', 'uncategorized' );
+		$global_site_tags_tag_cloud_order = get_site_option( 'global_site_tags_tag_cloud_order', 'count' );
+		$global_site_tags_post_type = get_site_option( 'global_site_tags_post_type', 'post' );
 
-				// Set the page number
-				if ( !isset( $wp_query->query_vars['paged'] ) || $wp_query->query_vars['paged'] <= 1 ) {
-					$page = 1;
-					$start = 0;
-				} else {
-					$page = $wp_query->query_vars['paged'];
-					$math = $wp_query->query_vars['paged'] - 1;
-					$math = $global_site_tags_per_page * $math;
-					$start = $math;
-				}
+		if ( empty( $wp_query->query_vars['tag'] ) ) {
+			return $content . $this->global_site_tags_tag_cloud( $content, $global_site_tags_shown, $global_site_tags_tag_cloud_order, 14, 52, '', '', $global_site_tags_post_type );
+		}
 
-				if ( $global_site_tags_post_type != 'all' ) {
-					$parameters['post_type'] = $global_site_tags_post_type;
-				} else {
-					$post_types = $this->global_site_tags_get_post_types();
-					$parameters['post_type'] = $post_types;
-				}
+		// Show the results list for the tag
+		//=====================================//
 
-				// Add in the start and end numbers
-				$parameters['posts_per_page'] = intval( $global_site_tags_per_page );
-				$parameters['paged'] = intval( $page );
+		// Set the page number
+		network_query_posts( array(
+			'post_per_page' => absint( $global_site_tags_per_page ),
+			'paged'         => isset( $wp_query->query_vars['paged'] ) && $wp_query->query_vars['paged'] > 1 ? $wp_query->query_vars['paged'] : 1,
+			'tag'           => urldecode( $wp_query->query_vars['tag'] ),
+			'post_type'     => $global_site_tags_post_type != 'all'
+				? $global_site_tags_post_type
+				: $this->global_site_tags_get_post_types(),
+		) );
 
-				// Add in the tags
-				$parameters['tag'] = urldecode( $wp_query->query_vars['tag'] );
+		if ( !network_have_posts() ) {
+			$content .= '<p style="text-align:center">';
+			$content .= __( 'Nothing found for search term(s).', 'globalsitetags' );
+			$content .= '</p>';
 
-				//=====================================//
+			return $content;
+		}
 
-				if ( !empty( $wp_query->query_vars['tag'] ) ) {
-					$network_query_posts = network_query_posts( $parameters );
+		if ( isset( $GLOBALS['network_query']->found_posts ) && $GLOBALS['network_query']->found_posts > absint( $global_site_tags_per_page ) ) {
+			$navigation_content = $this->new_pagination( $GLOBALS['network_query'], $current_site->path . $this->global_site_tags_base . '/' . urlencode( $wp_query->query_vars['tag'] ) );
+		}
 
-					//found_posts
-					if ( network_have_posts() && isset( $GLOBALS['network_query']->found_posts ) && $GLOBALS['network_query']->found_posts > intval( $global_site_tags_per_page ) ) {
-						$next = 'yes';
-						$navigation_content = $this->new_pagination( $GLOBALS['network_query'], $current_site->path . $this->global_site_tags_base . '/' . urlencode( $wp_query->query_vars['tag'] ) );
-					}
+		if ( isset( $navigation_content ) ) {
+			$content .= $navigation_content;
+		}
 
-					if ( network_have_posts() ) {
-						$content .= (isset( $navigation_content )) ? $navigation_content : '';
+		$content .= '<div style="float:left;width:100%">';
+		$content .= '<table border="0" width="100%" bgcolor="">';
+		$content .= '<tr>';
+		$content .= '<td style="background-color:' . $global_site_tags_background_color . '; border-bottom-style:solid; border-bottom-color:' . $global_site_tags_border_color . '; border-bottom-width:1px; font-size:12px;" width="10%"> </td>';
+		$content .= '<td style="background-color:' . $global_site_tags_background_color . '; border-bottom-style:solid; border-bottom-color:' . $global_site_tags_border_color . '; border-bottom-width:1px; font-size:12px;" width="90%"><center><strong>' . __( 'Posts', 'globalsitesearch' ) . '</strong></center></td>';
+		$content .= '</tr>';
 
-						$content .= '<div style="float:left; width:100%">';
-						$content .= '<table border="0" width="100%" bgcolor="">';
-						$content .= '<tr>';
-						$content .= '<td style="background-color:' . $global_site_tags_background_color . '; border-bottom-style:solid; border-bottom-color:' . $global_site_tags_border_color . '; border-bottom-width:1px; font-size:12px;" width="10%"> </td>';
-						$content .= '<td style="background-color:' . $global_site_tags_background_color . '; border-bottom-style:solid; border-bottom-color:' . $global_site_tags_border_color . '; border-bottom-width:1px; font-size:12px;" width="90%"><center><strong>' . __( 'Posts', 'globalsitesearch' ) . '</strong></center></td>';
-						$content .= '</tr>';
+		// Search results
 
-						// Search results
+		$members_directory_site_admin_options_exists = function_exists( 'members_directory_site_admin_options' );
+		$avatar_default = get_option( 'avatar_default' );
+		$tic_toc = 'toc';
 
-						$avatar_default = get_option( 'avatar_default' );
-						$tic_toc = 'toc';
+		while ( network_have_posts() ) {
+			network_the_post();
 
-						while ( network_have_posts() ) {
-							network_the_post();
+			//=============================//
+			$author_id = network_get_the_author_id();
+			$the_author = get_user_by( 'id', $author_id );
+			$post_author_display_name = $the_author ? $the_author->display_name : __( 'Unknown', 'globalsitetags' );
 
-							//=============================//
-							$author_id = network_get_the_author_id();
-							$the_author = get_user_by( 'id', $author_id );
+			$tic_toc = ($tic_toc == 'toc') ? 'tic' : 'toc';
+			$bg_color = ($tic_toc == 'tic') ? $global_site_tags_alternate_background_color : $global_site_tags_background_color;
 
-							if ( !$the_author ) {
-								$post_author_display_name = __( 'Unknown', 'globalsitetags' );
-							} else {
-								$post_author_display_name = $the_author->display_name;
-							}
+			//=============================//
+			$content .= '<tr>';
+				$content .= '<td style="background-color:' . $bg_color . ';padding-top:10px;text-align:center;" valign="top" width="10%"><a style="text-decoration:none;" href="' . network_get_permalink() . '">' . get_avatar( $author_id, 32, $avatar_default ) . '</a></td>';
+				$content .= '<td style="background-color:' . $bg_color . ';padding-top:10px;vertical-align:top;text-align:left;" width="90%" valign="top">';
+					$content .= '<div>';
+						$content .= $members_directory_site_admin_options_exists
+							? '<strong><a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $members_directory_base . '/' . $the_author->user_nicename . '/">' . $post_author_display_name . '</a> ' . __( ' wrote', 'globalsitetags' ) . ': </strong> '
+							: '<strong>' . sprintf( _x( '%s wrote', '{author name} wrote', 'globalsitetags' ), $post_author_display_name ) . ': </strong> ';
+					$content .= '<strong><a style="text-decoration:none;" href="' . network_get_permalink() . '">' . network_get_the_title() . '</a></strong></div>';
+					$content .= substr( strip_tags( network_get_the_content() ), 0, 250 ) . ' (<a href="' . network_get_permalink() . '">' . __( 'More', 'globalsitetags' ) . '</a>)';
+				$content .= '</td>';
+			$content .= '</tr>';
+		}
 
-							$tic_toc = ($tic_toc == 'toc') ? 'tic' : 'toc';
-							$bg_color = ($tic_toc == 'tic') ? $global_site_tags_alternate_background_color : $global_site_tags_background_color;
+		$content .= '</table>';
+		$content .= '</div>';
 
-							//=============================//
-							$content .= '<tr>';
-								$content .= '<td style="background-color:' . $bg_color . '; padding-top:10px; text-align: center;" valign="top" width="10%"><a style="text-decoration:none;" href="' . network_get_permalink() . '">' . get_avatar( $author_id, 32, $avatar_default ) . '</a></td>';
-								$content .= '<td style="background-color:' . $bg_color . '; padding-top:10px; vertical-align: top;" width="90%" valign="top">';
-								if ( function_exists( 'members_directory_site_admin_options' ) ) {
-									$post_author_nicename = $the_author->user_nicename;
-									$content .= '<strong><a style="text-decoration:none;" href="http://' . $current_site->domain . $current_site->path . $members_directory_base . '/' . $post_author_nicename . '/">' . $post_author_display_name . '</a> ' . __( ' wrote', 'globalsitetags' ) . ': </strong> ';
-								} else {
-									$content .= '<strong>' . $post_author_display_name . __( ' wrote', 'globalsitetags' ) . ': </strong> ';
-								}
-								$content .= '<strong><a style="text-decoration:none;" href="' . network_get_permalink() . '">' . network_get_the_title() . '</a></strong><br />';
-								$the_content = network_get_the_content();
-								$content .= substr( strip_tags( $the_content ), 0, 250 ) . ' (<a href="' . network_get_permalink() . '">' . __( 'More', 'globalsitetags' ) . '</a>)';
-								$content .= '</td>';
-							$content .= '</tr>';
-						}
-
-
-						$content .= '</table>';
-						$content .= '</div>';
-						$content .= (isset( $navigation_content )) ? $navigation_content : '';
-					} else {
-						$content .= '<p>';
-						$content .= '<center>';
-						$content .= __( 'Nothing found for search term(s).', 'globalsitetags' );
-						$content .= '</center>';
-						$content .= '</p>';
-					}
-				}
-			} else {
-				// Show the tag cloud
-				$content .= $this->global_site_tags_tag_cloud( $content, $global_site_tags_shown, $global_site_tags_tag_cloud_order, 14, 52, '', '', $global_site_tags_post_type );
-			}
+		if ( isset( $navigation_content ) ) {
+			$content .= $navigation_content;
 		}
 
 		return $content;
