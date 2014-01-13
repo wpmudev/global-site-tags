@@ -8,24 +8,12 @@ Version: 3.0.2
 Author URI: http://premium.wpmudev.org
 */
 
-$widget_global_site_tags_title = __('Global Site Tags', "globalsitetags");
-$widget_global_site_tags_nice_title = 'global_site_tags';
-$widget_global_site_tags_description = __('Displays tags from all blogs', "globalsitetags");
-$widget_global_site_tags_height = 600;
-$widget_global_site_tags_width = 300;
-
 class widget_global_site_tags extends WP_Widget {
 
-	//Declares the widget_global_site_tags class.
-	function widget_global_site_tags() {
-		global $widget_global_site_tags_title, $widget_global_site_tags_nice_title, $widget_global_site_tags_description, $widget_global_site_tags_height, $widget_global_site_tags_width;
-
-		// Load the text-domain
-		load_plugin_textdomain( 'globalsitetags', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-
-		$widget_ops = array( 'classname' => 'widget_global_site_tags', 'description' => __( $widget_global_site_tags_description ) );
-		$control_ops = array( 'width' => $widget_global_site_tags_width, 'height' => $widget_global_site_tags_height );
-		$this->WP_Widget( $widget_global_site_tags_nice_title, __( $widget_global_site_tags_title ), $widget_ops, $control_ops );
+	public function __construct() {
+		parent::__construct( 'global_site_tags', __( 'Global Site Tags', 'globalsitetags' ), array(
+			'description' => __( 'Displays tags from all blogs', 'globalsitetags' ),
+		) );
 	}
 
 	//Displays the Widget
@@ -33,9 +21,7 @@ class widget_global_site_tags extends WP_Widget {
 		global $globalsitetags;
 
 		extract( $args );
-		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '&nbsp;' : $instance['title'] );
-		$lineOne = empty( $instance['lineOne'] ) ? 'Hello' : $instance['lineOne'];
-		$lineTwo = empty( $instance['lineTwo'] ) ? 'World' : $instance['lineTwo'];
+		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? __( 'Tags', 'globalsitetags' ) : $instance['title'] );
 
 		//Before the widget
 		echo $before_widget;
@@ -45,8 +31,7 @@ class widget_global_site_tags extends WP_Widget {
 			echo $before_title . $title . $after_title;
 		}
 
-		//Make the Hello World Example widget
-		//echo '<div style="text-align:center;padding:10px;">' . $lineOne . '<br />' . $lineTwo . "</div>";
+
 		echo $globalsitetags->global_site_tags_tag_cloud( '', $instance['number'], $instance['tag_cloud_order'], $instance['low_font_size'], $instance['high_font_size'], '', '', $instance['poststype'] );
 
 		//After the widget
@@ -83,14 +68,6 @@ class widget_global_site_tags extends WP_Widget {
 		?><p>
 			<label for="<?php echo $this->get_field_id( 'title' ) ?>"><?php _e( 'Widget Title', 'globalsitetags' ) ?>:</label>
 			<input type="text" id="<?php echo $this->get_field_id( 'title' ) ?>" class="widefat" name="<?php echo $this->get_field_name( 'title' ) ?>" value="<?php echo esc_attr( $instance['title'] ) ?>">
-		</p>
-
-		<p>
-			<label for="<?php echo $this->get_field_id( 'tag_cloud_order' ) ?>"><?php _e( 'Tag Cloud Order', 'globalsitetags' ) ?>:</label>
-			<select id="<?php echo $this->get_field_id( 'tag_cloud_order' ) ?>" class="widefat" name="<?php echo $this->get_field_name( 'tag_cloud_order' ) ?>">
-				<option value="count"><?php _e( 'Tag Count', "globalsitetags" ) ?></option>
-				<option value="most_recent" <?php selected( 'most_recent', $instance['tag_cloud_order'] ) ?>><?php _e( 'Most Recent', 'globalsitetags' ) ?></option>
-			</select>
 		</p>
 
 		<p>

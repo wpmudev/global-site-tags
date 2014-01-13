@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Site Tags 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-13 15:46+0300\n"
-"PO-Revision-Date: 2014-01-13 15:46+0300\n"
+"POT-Creation-Date: 2014-01-13 17:31+0300\n"
+"PO-Revision-Date: 2014-01-13 17:32+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <barry@incsub.com>\n"
 "Language: en_US\n"
@@ -20,57 +20,45 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: ./..\n"
 
-#: ../widget-global-site-tags.php:11
+#: ../widget-global-site-tags.php:14
 msgid "Global Site Tags"
 msgstr "Global Site Tags"
 
-#: ../widget-global-site-tags.php:13
+#: ../widget-global-site-tags.php:15
 msgid "Displays tags from all blogs"
 msgstr "Displays tags from all blogs"
 
-#: ../widget-global-site-tags.php:84
+#: ../widget-global-site-tags.php:24 ../global-site-tags.php:121
+msgid "Tags"
+msgstr "Tags"
+
+#: ../widget-global-site-tags.php:69
 msgid "Widget Title"
 msgstr "Widget Title"
 
-#: ../widget-global-site-tags.php:89 ../global-site-tags.php:210
-msgid "Tag Cloud Order"
-msgstr "Tag Cloud Order"
-
-#: ../widget-global-site-tags.php:91 ../global-site-tags.php:213
-msgid "Tag Count"
-msgstr "Tag Count"
-
-#: ../widget-global-site-tags.php:92 ../global-site-tags.php:214
-msgid "Most Recent"
-msgstr "Most Recent"
-
-#: ../widget-global-site-tags.php:97
+#: ../widget-global-site-tags.php:74
 msgid "Number of Tags"
 msgstr "Number of Tags"
 
-#: ../widget-global-site-tags.php:106
+#: ../widget-global-site-tags.php:83
 msgid "Largest Font Size"
 msgstr "Largest Font Size"
 
-#: ../widget-global-site-tags.php:115
+#: ../widget-global-site-tags.php:92
 msgid "Smallest Font Size"
 msgstr "Smallest Font Size"
 
-#: ../widget-global-site-tags.php:124
+#: ../widget-global-site-tags.php:101
 msgid "Post Type"
 msgstr "Post Type"
 
-#: ../widget-global-site-tags.php:126 ../global-site-tags.php:222
+#: ../widget-global-site-tags.php:103 ../global-site-tags.php:213
 msgid "all"
 msgstr "all"
 
-#: ../widget-global-site-tags.php:132
+#: ../widget-global-site-tags.php:109
 msgid "post"
 msgstr "post"
-
-#: ../global-site-tags.php:121
-msgid "Tags"
-msgstr "Tags"
 
 #: ../global-site-tags.php:158
 msgid "Site Tags"
@@ -113,40 +101,36 @@ msgstr ""
 "Banned tags will not appear in tag clouds. Please separate tags with commas. "
 "Ex: tag1, tag2, tag3"
 
-#: ../global-site-tags.php:219
+#: ../global-site-tags.php:210
 msgid "List Post Type"
 msgstr "List Post Type"
 
-#: ../global-site-tags.php:373 ../global-site-tags.php:375
-msgid "recent post(s)"
-msgstr "recent post(s)"
-
-#: ../global-site-tags.php:382
+#: ../global-site-tags.php:289
 msgid "There are no tags to display."
 msgstr "There are no tags to display."
 
-#: ../global-site-tags.php:444
+#: ../global-site-tags.php:350
 msgid "Nothing found for search term(s)."
 msgstr "Nothing found for search term(s)."
 
-#: ../global-site-tags.php:462
+#: ../global-site-tags.php:368
 msgid "Posts"
 msgstr "Posts"
 
-#: ../global-site-tags.php:477
+#: ../global-site-tags.php:383
 msgid "Unknown"
 msgstr "Unknown"
 
-#: ../global-site-tags.php:488
+#: ../global-site-tags.php:394
 msgid " wrote"
 msgstr " wrote"
 
-#: ../global-site-tags.php:489
+#: ../global-site-tags.php:395
 #, php-format
 msgctxt "{author name} wrote"
 msgid "%s wrote"
 msgstr "%s wrote"
 
-#: ../global-site-tags.php:491
+#: ../global-site-tags.php:397
 msgid "More"
 msgstr "More"

@@ -207,15 +207,6 @@ class globalsitetags {
 				</td>
 			</tr>
 			<tr valign="top">
-				<th width="33%" scope="row"><?php _e( 'Tag Cloud Order', "globalsitetags" ) ?></th>
-				<td>
-					<select name="global_site_tags_tag_cloud_order" id="global_site_tags_tag_cloud_order">
-						<option value="count"><?php _e( 'Tag Count', "globalsitetags" ) ?></option>
-						<option value="most_recent"<?php selected( 'most_recent', $global_site_tags_tag_cloud_order ) ?>><?php _e( 'Most Recent', "globalsitetags" ) ?></option>
-					</select>
-				</td>
-			</tr>
-			<tr valign="top">
 				<th width="33%" scope="row"><?php _e( 'List Post Type', 'globalsitetags' ) ?></th>
 				<td>
 					<select name="global_site_tags_post_type" id="global_site_tags_post_type">
@@ -248,23 +239,37 @@ class globalsitetags {
 		update_site_option( 'global_site_tags_post_type', $_POST['global_site_tags_post_type'] );
 	}
 
-	function global_site_tags_tag_cloud( $content, $number, $order_by = '', $low_font_size = 14, $high_font_size = 52, $class, $cloud_banned_tags = false, $global_site_tags_post_type = 'post' ) {
-		global $wpdb, $current_site, $global_site_tags_base;
+	function global_site_tags_tag_cloud( $content, $number, $order_by, $low_font_size, $high_font_size, $class, $cloud_banned_tags = false, $global_site_tags_post_type = 'post' ) {
+		global $wpdb, $current_site;
 
 		$global_site_tags_banned_tags = get_site_option( 'global_site_tags_banned_tags', 'uncategorized' );
 		$global_site_tags_tag_cloud_order = get_site_option( 'global_site_tags_tag_cloud_order', 'count' );
-		$global_site_tags_banned_tags_list = explode( ',', $global_site_tags_banned_tags );
-		$global_site_tags_banned_tags_list = array_map( 'trim', $global_site_tags_banned_tags_list );
+
+		$banned_tags = array_map( 'trim', explode( ',', $global_site_tags_banned_tags ) );
 		if ( is_array( $cloud_banned_tags ) ) {
-			$global_site_tags_banned_tags_list = array_merge( $cloud_banned_tags, $global_site_tags_banned_tags_list );
+			$banned_tags = array_merge( $cloud_banned_tags, $banned_tags );
 		}
+		$banned_tags = implode( "', '", array_map( 'esc_sql', array_unique( array_filter( array_map( 'trim', $banned_tags ) ) ) ) );
+
+		$base_url = trailingslashit( $current_site->domain . $current_site->path . $this->global_site_tags_base );
 
 		$query = "
-			SELECT count(*) as term_count, t.term_id FROM {$this->db->base_prefix}network_terms as t
+			SELECT COUNT(*) as 'count',
+			       t.term_id,
+				   t.term_id as id,
+				   t.name,
+				   t.slug,
+				   t.term_group,
+				   tt.term_taxonomy_id,
+				   tt.taxonomy,
+				   tt.description,
+				   tt.parent,
+				   CONCAT('{$base_url}', t.slug) as 'link'
+			  FROM {$this->db->base_prefix}network_terms as t
 			 INNER JOIN {$this->db->base_prefix}network_term_taxonomy AS tt ON t.term_id = tt.term_id
 			 INNER JOIN {$this->db->base_prefix}network_term_relationships AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id
 			 INNER JOIN {$this->db->base_prefix}network_posts AS np ON np.ID = tr.object_id AND np.BLOG_ID = tr.blog_id
-			 WHERE tt.taxonomy = 'post_tag'";
+			 WHERE tt.taxonomy = 'post_tag' AND t.name NOT IN ('{$banned_tags}')";
 
 		if ( $global_site_tags_post_type != 'all' ) {
 			$query .= " AND np.post_type = '{$global_site_tags_post_type}'";
@@ -276,113 +281,14 @@ class globalsitetags {
 			$order_by = $global_site_tags_tag_cloud_order;
 		}
 
-		if ( $order_by == 'count' ) {
-			$query .= ' ORDER BY term_count DESC ';
-		} else if ( $order_by == 'most_recent' ) {
-			$query .= ' ORDER BY term_count DESC ';
-		}
-
-		$query .= ' LIMIT ' . $number;
+		$query .= " ORDER BY 'count' DESC LIMIT " . $number;
 
 		$thetags = $wpdb->get_results( $query );
-		if ( !empty( $thetags ) ) {
-			//insert term names
-			$tags_array_add = array();
-			$loop_count = 0;
+		$content .= !empty( $thetags )
+			? wp_generate_tag_cloud( $thetags, array( 'smallest' => $low_font_size, 'largest' => $high_font_size, 'unit' => 'px', 'number' => $number, 'orderby' => 'count', 'order' => 'DESC' ) )
+			: '<p style="text-align:center">' . __( "There are no tags to display.", "globalsitetags" ) . '</p>';
 
-			foreach ( $thetags as $tag ) {
-				$loop_count = $loop_count + 1;
-
-				$tagdetails = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM " . $wpdb->base_prefix . "network_terms WHERE term_id = %d", $tag->term_id ) );
-				if ( !empty( $tagdetails ) ) {
-					$tagname = $tagdetails->name;
-					$tagslug = $tagdetails->slug;
-				}
-
-				$tags_array_add[$loop_count]['term_name'] = $tagname;
-				$tags_array_add[$loop_count]['term_slug'] = $tagslug;
-
-				$tags_array_add[$loop_count]['term_count'] = $tag->term_count;
-				$tags_array_add[$loop_count]['term_id'] = $tag->term_id;
-			}
-			$tags_array = $tags_array_add;
-
-			//get min/max counts
-			$term_min_count = 99999999999;
-			$term_max_count = 0;
-			foreach ( $tags_array as $tag ) {
-				$hide_tag = 'false';
-				foreach ( $global_site_tags_banned_tags_list as $blacklist_tag ) {
-					if ( strtolower( $tag['term_name'] ) == strtolower( $blacklist_tag ) ) {
-						$hide_tag = 'true';
-					}
-				}
-				if ( $hide_tag != 'true' ) {
-					if ( $tag['term_count'] > $term_max_count ) {
-						$term_max_count = $tag['term_count'];
-					}
-					if ( $tag['term_count'] < $term_min_count ) {
-						$term_min_count = $tag['term_count'];
-					}
-				}
-			}
-
-			$term_count = count( $tags_array );
-			//adjust term count
-			foreach ( $tags_array as $tag ) {
-				foreach ( $global_site_tags_banned_tags_list as $blacklist_tag ) {
-					if ( strtolower( $tag['term_name'] ) == strtolower( $blacklist_tag ) ) {
-						$term_count = $term_count - 1;
-					}
-				}
-			}
-			//math fun... heh
-			$font_difference = $high_font_size - $low_font_size;
-			$term_difference = $term_max_count - $term_min_count;
-			$term_difference = $term_difference + 1;
-			if ( $term_difference > 0 ) {
-				$font_unit = $font_difference / $term_difference;
-			} else {
-				$font_unit = $low_font_size;
-			}
-
-			//loop through and toss out the tag cloud
-			$counter = 1;
-
-			//print_r($tags_array);
-			$content .= '<div>';
-			foreach ( $tags_array as $tag ) {
-				$hide_tag = 'false';
-				foreach ( $global_site_tags_banned_tags_list as $blacklist_tag ) {
-					if ( strtolower( $tag['term_name'] ) == strtolower( $blacklist_tag ) ) {
-						$hide_tag = 'true';
-					}
-				}
-				if ( $hide_tag != 'true' ) {
-					//font size
-					if ( $tag['term_count'] == $term_max_count ) {
-						$font_size = $high_font_size;
-					} else if ( $tag['term_count'] == $term_min_count ) {
-						$font_size = $low_font_size;
-					} else {
-						$font_size = $tag['term_count'] * $font_unit;
-						$font_size = $font_size + $low_font_size;
-					}
-					//output
-					if ( $class != '' ) {
-						$content .= '<a class="' . $class . '" href="http://' . $current_site->domain . $current_site->path . $this->global_site_tags_base . '/' . $tag['term_slug'] . '/" title="' . __( 'recent post(s)' ) . '" style="font-size: ' . $font_size . 'px;" id="cat-' . $tag['term_id'] . '">' . $tag['term_name'] . '</a>' . "\n";
-					} else {
-						$content .= '<a href="http://' . $current_site->domain . $current_site->path . $this->global_site_tags_base . '/' . $tag['term_slug'] . '/" title="' . __( 'recent post(s)', "globalsitetags" ) . '" style="float:left;padding-bottom:20px;padding-right:2px;text-decoration:none;font-size: ' . $font_size . 'px;" id="cat-' . $tag['term_id'] . '">' . $tag['term_name'] . '</a>' . "\n";
-					}
-					$counter = $counter + 1;
-				}
-			}
-			$content .= '</div>';
-		} else {
-			$content .= '<p><center>' . __( "There are no tags to display.", "globalsitetags" ) . '</center></p>';
-		}
-
-		return $content;
+		return '<div class="tagcloud">' . $content . '</div>';
 	}
 
 	//------------------------------------------------------------------------//
