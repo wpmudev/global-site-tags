@@ -153,9 +153,7 @@ class globalsitetags {
 		$global_site_tags_alternate_background_color = get_site_option( 'global_site_tags_alternate_background_color', '#FFFFFF' );
 		$global_site_tags_border_color = get_site_option( 'global_site_tags_border_color', '#CFD0CB' );
 		$global_site_tags_banned_tags = get_site_option( 'global_site_tags_banned_tags', 'uncategorized' );
-		$global_site_tags_tag_cloud_order = get_site_option( 'global_site_tags_tag_cloud_order', 'count' );
 		$global_site_tags_post_type = get_site_option( 'global_site_tags_post_type', 'post' );
-		$global_site_tags_get_taxonomies = get_site_option( 'global_site_tags_get_taxonomies', 'post_tag' );
 		$post_types = $this->global_site_tags_get_post_types();
 
 		?><h3><?php _e( 'Site Tags', "globalsitetags" ) ?></h3>
@@ -238,21 +236,18 @@ class globalsitetags {
 		update_site_option( 'global_site_tags_alternate_background_color', trim( $_POST['global_site_tags_alternate_background_color'] ) );
 		update_site_option( 'global_site_tags_border_color', trim( $_POST['global_site_tags_border_color'] ) );
 		update_site_option( 'global_site_tags_banned_tags', trim( $_POST['global_site_tags_banned_tags'] ) );
-		update_site_option( 'global_site_tags_tag_cloud_order', trim( $_POST['global_site_tags_tag_cloud_order'] ) );
 		update_site_option( 'global_site_tags_post_type', $_POST['global_site_tags_post_type'] );
 	}
 
-	function global_site_tags_tag_cloud( $content, $number, $order_by, $low_font_size, $high_font_size, $class, $cloud_banned_tags = false, $global_site_tags_post_type = 'post' ) {
+	function global_site_tags_tag_cloud( $content, $number, $smallest, $largest, $cloud_banned_tags = false, $global_site_tags_post_type = 'post' ) {
 		global $wpdb;
 
 		$global_site_tags_banned_tags = get_site_option( 'global_site_tags_banned_tags', 'uncategorized' );
-		$global_site_tags_tag_cloud_order = get_site_option( 'global_site_tags_tag_cloud_order', 'count' );
 
 		$banned_tags = array_map( 'trim', explode( ',', $global_site_tags_banned_tags ) );
 		if ( is_array( $cloud_banned_tags ) ) {
 			$banned_tags = array_merge( $cloud_banned_tags, $banned_tags );
 		}
-		$banned_tags = implode( "', '", array_map( 'esc_sql', array_unique( array_filter( array_map( 'trim', $banned_tags ) ) ) ) );
 
 		$base_url = trailingslashit( trailingslashit( home_url() ) . $this->global_site_tags_base );
 		if ( GLOBAL_SITE_TAGS_BLOG != get_current_blog_id() ) {
@@ -277,23 +272,22 @@ class globalsitetags {
 			 INNER JOIN {$this->db->base_prefix}network_term_taxonomy AS tt ON t.term_id = tt.term_id
 			 INNER JOIN {$this->db->base_prefix}network_term_relationships AS tr ON tt.term_taxonomy_id = tr.term_taxonomy_id
 			 INNER JOIN {$this->db->base_prefix}network_posts AS np ON np.ID = tr.object_id AND np.BLOG_ID = tr.blog_id
-			 WHERE tt.taxonomy = 'post_tag' AND t.name NOT IN ('{$banned_tags}')";
+			 WHERE tt.taxonomy = 'post_tag'";
+
+		if ( !empty( $banned_tags ) ) {
+			$banned_tags = implode( "', '", array_map( 'esc_sql', array_unique( array_filter( array_map( 'trim', $banned_tags ) ) ) ) );
+			$query .= " AND t.name NOT IN ('{$banned_tags}') ";
+		}
 
 		if ( $global_site_tags_post_type != 'all' ) {
 			$query .= " AND np.post_type = '{$global_site_tags_post_type}'";
 		}
 
-		$query .= " GROUP BY t.term_id";
-
-		if ( empty( $order_by ) ) {
-			$order_by = $global_site_tags_tag_cloud_order;
-		}
-
-		$query .= " ORDER BY 'count' DESC LIMIT " . $number;
+		$query .= " GROUP BY t.term_id ORDER BY 'count' DESC LIMIT " . $number;
 
 		$thetags = $wpdb->get_results( $query );
 		$content .= !empty( $thetags )
-			? wp_generate_tag_cloud( $thetags, array( 'smallest' => $low_font_size, 'largest' => $high_font_size, 'unit' => 'px', 'number' => $number, 'orderby' => 'count', 'order' => 'DESC' ) )
+			? wp_generate_tag_cloud( $thetags, array( 'smallest' => $smallest, 'largest' => $largest, 'unit' => 'px', 'number' => $number, 'orderby' => 'count', 'order' => 'DESC' ) )
 			: '<p style="text-align:center">' . __( "There are no tags to display.", "globalsitetags" ) . '</p>';
 
 		return '<div class="tagcloud">' . $content . '</div>';
@@ -327,17 +321,15 @@ class globalsitetags {
 			return $content;
 		}
 
-		$global_site_tags_shown = get_site_option( 'global_site_tags_shown', '50' );
-		$global_site_tags_per_page = get_site_option( 'global_site_tags_per_page', '10' );
+		$global_site_tags_shown = get_site_option( 'global_site_tags_shown', 50 );
+		$global_site_tags_per_page = get_site_option( 'global_site_tags_per_page', 10 );
 		$global_site_tags_background_color = get_site_option( 'global_site_tags_background_color', '#F2F2EA' );
 		$global_site_tags_alternate_background_color = get_site_option( 'global_site_tags_alternate_background_color', '#FFFFFF' );
 		$global_site_tags_border_color = get_site_option( 'global_site_tags_border_color', '#CFD0CB' );
-		$global_site_tags_banned_tags = get_site_option( 'global_site_tags_banned_tags', 'uncategorized' );
-		$global_site_tags_tag_cloud_order = get_site_option( 'global_site_tags_tag_cloud_order', 'count' );
 		$global_site_tags_post_type = get_site_option( 'global_site_tags_post_type', 'post' );
 
 		if ( empty( $wp_query->query_vars['tag'] ) ) {
-			return $content . $this->global_site_tags_tag_cloud( $content, $global_site_tags_shown, $global_site_tags_tag_cloud_order, 14, 52, '', '', $global_site_tags_post_type );
+			return $content . $this->global_site_tags_tag_cloud( $content, $global_site_tags_shown, 14, 52, '', $global_site_tags_post_type );
 		}
 
 		// Show the results list for the tag
@@ -345,10 +337,10 @@ class globalsitetags {
 
 		// Set the page number
 		network_query_posts( array(
-			'post_per_page' => absint( $global_site_tags_per_page ),
-			'paged'         => isset( $wp_query->query_vars['paged'] ) && $wp_query->query_vars['paged'] > 1 ? $wp_query->query_vars['paged'] : 1,
-			'tag'           => urldecode( $wp_query->query_vars['tag'] ),
-			'post_type'     => $global_site_tags_post_type != 'all'
+			'posts_per_page' => absint( $global_site_tags_per_page ),
+			'paged'          => isset( $wp_query->query_vars['paged'] ) && $wp_query->query_vars['paged'] > 1 ? $wp_query->query_vars['paged'] : 1,
+			'tag'            => urldecode( $wp_query->query_vars['tag'] ),
+			'post_type'      => $global_site_tags_post_type != 'all'
 				? $global_site_tags_post_type
 				: $this->global_site_tags_get_post_types(),
 		) );

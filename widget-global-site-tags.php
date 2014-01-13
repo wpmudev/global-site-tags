@@ -21,20 +21,20 @@ class widget_global_site_tags extends WP_Widget {
 		global $globalsitetags;
 
 		extract( $args );
-		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? __( 'Tags', 'globalsitetags' ) : $instance['title'] );
 
-		//Before the widget
+		// Before the widget
 		echo $before_widget;
 
-		//The title
+		// The title
+		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? __( 'Tags', 'globalsitetags' ) : $instance['title'] );
 		if ( $title ) {
 			echo $before_title . $title . $after_title;
 		}
 
+		// Render tags cloud
+		echo $globalsitetags->global_site_tags_tag_cloud( '', $instance['number'], $instance['low_font_size'], $instance['high_font_size'], false, $instance['poststype'] );
 
-		echo $globalsitetags->global_site_tags_tag_cloud( '', $instance['number'], $instance['tag_cloud_order'], $instance['low_font_size'], $instance['high_font_size'], '', '', $instance['poststype'] );
-
-		//After the widget
+		// After the widget
 		echo $after_widget;
 	}
 

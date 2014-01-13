@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Global Site Tags 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-13 17:31+0300\n"
-"PO-Revision-Date: 2014-01-13 17:32+0300\n"
+"POT-Creation-Date: 2014-01-13 18:14+0300\n"
+"PO-Revision-Date: 2014-01-13 18:14+0300\n"
 "Last-Translator: Eugene Manuilov <eugene@manuilov.org>\n"
 "Language-Team: Incsub <barry@incsub.com>\n"
 "Language: en_US\n"
@@ -28,7 +28,7 @@ msgstr "Global Site Tags"
 msgid "Displays tags from all blogs"
 msgstr "Displays tags from all blogs"
 
-#: ../widget-global-site-tags.php:24 ../global-site-tags.php:121
+#: ../widget-global-site-tags.php:29 ../global-site-tags.php:124
 msgid "Tags"
 msgstr "Tags"
 
@@ -52,7 +52,7 @@ msgstr "Smallest Font Size"
 msgid "Post Type"
 msgstr "Post Type"
 
-#: ../widget-global-site-tags.php:103 ../global-site-tags.php:213
+#: ../widget-global-site-tags.php:103 ../global-site-tags.php:214
 msgid "all"
 msgstr "all"
 
@@ -60,40 +60,40 @@ msgstr "all"
 msgid "post"
 msgstr "post"
 
-#: ../global-site-tags.php:158
+#: ../global-site-tags.php:159
 msgid "Site Tags"
 msgstr "Site Tags"
 
-#: ../global-site-tags.php:162
+#: ../global-site-tags.php:163
 msgid "Tags Shown"
 msgstr "Tags Shown"
 
-#: ../global-site-tags.php:172
+#: ../global-site-tags.php:173
 msgid "Listing Per Page"
 msgstr "Listing Per Page"
 
-#: ../global-site-tags.php:182
+#: ../global-site-tags.php:183
 msgid "Background Color"
 msgstr "Background Color"
 
-#: ../global-site-tags.php:185 ../global-site-tags.php:192
-#: ../global-site-tags.php:199
+#: ../global-site-tags.php:186 ../global-site-tags.php:193
+#: ../global-site-tags.php:200
 msgid "Default"
 msgstr "Default"
 
-#: ../global-site-tags.php:189
+#: ../global-site-tags.php:190
 msgid "Alternate Background Color"
 msgstr "Alternate Background Color"
 
-#: ../global-site-tags.php:196
+#: ../global-site-tags.php:197
 msgid "Border Color"
 msgstr "Border Color"
 
-#: ../global-site-tags.php:203
+#: ../global-site-tags.php:204
 msgid "Banned Tags"
 msgstr "Banned Tags"
 
-#: ../global-site-tags.php:206
+#: ../global-site-tags.php:207
 msgid ""
 "Banned tags will not appear in tag clouds. Please separate tags with commas. "
 "Ex: tag1, tag2, tag3"
@@ -101,11 +101,11 @@ msgstr ""
 "Banned tags will not appear in tag clouds. Please separate tags with commas. "
 "Ex: tag1, tag2, tag3"
 
-#: ../global-site-tags.php:210
+#: ../global-site-tags.php:211
 msgid "List Post Type"
 msgstr "List Post Type"
 
-#: ../global-site-tags.php:289
+#: ../global-site-tags.php:291
 msgid "There are no tags to display."
 msgstr "There are no tags to display."
 
