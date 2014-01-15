@@ -437,4 +437,8 @@ class globalsitetags {
 
 }
 
+// instantiate plugin instance
 $globalsitetags = new globalsitetags();
+
+// load global site tags widget
+require dirname( __FILE__ ) . '/widget-global-site-tags.php';
