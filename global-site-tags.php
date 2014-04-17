@@ -3,8 +3,8 @@
 Plugin Name: Global Site Tags
 Plugin URI: http://premium.wpmudev.org/project/global-site-tags
 Description: This powerful plugin allows you to simply display a global tag cloud for your entire WordPress Multisite network. How cool is that!
-Author: Incsub
-Version: 3.1
+Author: WPMU DEV
+Version: 3.1.0.1
 Author URI: http://premium.wpmudev.org
 WDP ID: 105
 Network: true
@@ -284,7 +284,9 @@ class globalsitetags {
 		}
 
 		$query .= " GROUP BY t.term_id ORDER BY 'count' DESC LIMIT " . $number;
-
+		if (isset($_GET['TAGS_DEBUG'])) {
+			echo "DEBUG: query[". $query ."]<br />";
+		}
 		$thetags = $wpdb->get_results( $query );
 		$content .= !empty( $thetags )
 			? wp_generate_tag_cloud( $thetags, array( 'smallest' => $smallest, 'largest' => $largest, 'unit' => 'px', 'number' => $number, 'orderby' => 'count', 'order' => 'DESC' ) )
@@ -344,6 +346,13 @@ class globalsitetags {
 				? $global_site_tags_post_type
 				: $this->global_site_tags_get_post_types(),
 		) );
+
+		if (isset($_GET['TAGS_DEBUG'])) {
+			if (isset($GLOBALS['network_query'])) {
+				echo "network_query<pre>"; print_r($GLOBALS['network_query']); echo "</pre>";
+			}
+		}
+
 
 		if ( !network_have_posts() ) {
 			$content .= '<p style="text-align:center">';
@@ -437,8 +446,4 @@ class globalsitetags {
 
 }
 
-// instantiate plugin instance
 $globalsitetags = new globalsitetags();
-
-// load global site tags widget
-require dirname( __FILE__ ) . '/widget-global-site-tags.php';

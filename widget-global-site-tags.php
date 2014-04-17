@@ -1,4 +1,12 @@
 <?php
+/*
+Plugin Name: Global Site Tags Widget
+Plugin URI: http://premium.wpmudev.org/project/global-site-tags
+Description: This powerful plugin allows you to simply display a global tag cloud for your entire WordPress Multisite network. How cool is that!
+Author: WPMU DEV
+Version: 3.1.0.1
+Author URI: http://premium.wpmudev.org
+*/
 
 class widget_global_site_tags extends WP_Widget {
 
@@ -12,6 +20,8 @@ class widget_global_site_tags extends WP_Widget {
 	function widget( $args, $instance ) {
 		global $globalsitetags;
 
+		if (!is_object($globalsitetags)) return;
+		
 		extract( $args );
 
 		// Before the widget

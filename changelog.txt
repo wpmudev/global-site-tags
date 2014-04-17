@@ -1,0 +1,3 @@
+== 3.1.0.1 ==
+* Corrected error where widget PHP file was being loaded twice
+* Added graceful check to widget if main global site tags plugin was deactivated.
